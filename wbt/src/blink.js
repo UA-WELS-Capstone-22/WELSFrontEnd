@@ -1,4 +1,4 @@
-// const { Board, Led } = require("johnny-five");
+const { Board, Led } = require("johnny-five");
 // import Board from johnny-five
 // import Led from johnny-five
 const board = new Board();

@@ -42,6 +42,7 @@
     }
   },
   "dependencies": {
+    "blink": "^5.0.1",
     "electron-squirrel-startup": "^1.0.0",
     "serialport": "^10.4.0"
   },
