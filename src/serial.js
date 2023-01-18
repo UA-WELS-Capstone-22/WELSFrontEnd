@@ -1,5 +1,7 @@
-const { SerialPort } = eval("require('serialport')")
+const { ReadlineParser } = require("serialport");
 
+const { SerialPort } = eval("require('serialport')");
+const { path } = eval("require('path')");
 //function to enumerat over connectd serial ports
 // function listSerialPorts() {
 //     SerialPort.list().then(
@@ -30,7 +32,7 @@ const { SerialPort } = eval("require('serialport')")
 //                 console.error(err);
 //             }
 //         }, 1000);
-        
+
 //     })
 // }writeSerial();
 
@@ -52,25 +54,30 @@ const { SerialPort } = eval("require('serialport')")
 //     })
 // }writeSerial();
 
-
 async function writeSerial() {
-    const ports = await SerialPort.list();
-    ports.forEach(async currentPort => {
-        const portToWrite = new SerialPort(currentPort.path, { baudRate: 9600 });
-        portToWrite.on('open', () => {
-            console.log(`port ${currentPort.path} open`);
-            setInterval(async () => {
-                try {
-                    await portToWrite.write('hello from electron');
-                } catch (err) {
-                    console.error(err);
-                }
-            }, 1000);
-        });
-        portToWrite.on("close", () => {
-            console.log(`closing port ${currentPort.path}`);
-        });
-        portToWrite.close();
+  const ports = await SerialPort.list();
+  try {
+    ports.forEach(async (currentPort) => {
+    console.log(currentPort.path);
+    const portToWrite = new SerialPort({ path: currentPort.path , baudRate: 9600, parser: new ReadlineParser('\n') });
+
+      portToWrite.on("open", () => {
+        console.log(`port ${currentPort.path} open`);
+        setInterval(async () => {
+          try {
+            await portToWrite.write("hello from electron");
+          } catch (err) {
+            console.error(err);
+          }
+        }, 1000);
+      });
+      portToWrite.on("close", () => {
+        console.log(`closing port ${currentPort.path}`);
+      });
+      portToWrite.close();
     });
+  } catch (err) {
+    console.error(err);
+  }
 }
 writeSerial();
