@@ -1,6 +1,6 @@
 {
-  "name": "wbt",
-  "productName": "wbt",
+  "name": "wbt_sw",
+  "productName": "wbt_sw",
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": "src/index.js",
@@ -12,48 +12,18 @@
     "lint": "echo \"No linting configured\""
   },
   "keywords": [],
-  "author": "hpearl",
+  "author": "hpear",
   "license": "MIT",
-  "config": {
-    "forge": {
-      "packagerConfig": {},
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "wbt"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ]
-    }
-  },
   "dependencies": {
-    "blink": "^5.0.1",
     "electron-squirrel-startup": "^1.0.0",
-    "serialport": "^10.4.0"
+    "serialport": "^10.5.0"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.66",
-    "@electron-forge/maker-deb": "^6.0.0-beta.66",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.66",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.66",
-    "@electron-forge/maker-zip": "^6.0.0-beta.66",
-    "@electron-forge/plugin-webpack": "^6.0.0-beta.66",
-    "electron": "21.0.1",
-    "johnny-five": "^2.1.0"
+    "@electron-forge/cli": "^6.0.4",
+    "@electron-forge/maker-deb": "^6.0.4",
+    "@electron-forge/maker-rpm": "^6.0.4",
+    "@electron-forge/maker-squirrel": "^6.0.4",
+    "@electron-forge/maker-zip": "^6.0.4",
+    "electron": "22.0.2"
   }
 }
