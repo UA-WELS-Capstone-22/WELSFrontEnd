@@ -56,7 +56,6 @@ const { path } = eval("require('path')");
 
 async function writeSerial() {
   const ports = await SerialPort.list();
-  try {
     ports.forEach(async (currentPort) => {
     console.log(currentPort.path);
     const portToWrite = new SerialPort({ path: currentPort.path , baudRate: 9600, parser: new ReadlineParser('\n') });
@@ -71,13 +70,22 @@ async function writeSerial() {
           }
         }, 1000);
       });
+      
+      portToWrite.on('data', (data) => {
+        console.log(data)
+        document.getElementById('serial').innerText = data[0].toString()
+      })
+
+
+
       portToWrite.on("close", () => {
         console.log(`closing port ${currentPort.path}`);
-      });
-      portToWrite.close();
+      });portToWrite.close();
+
+
+
     });
-  } catch (err) {
-    console.error(err);
-  }
-}
-writeSerial();
+}writeSerial();
+
+// simple function to read from serial port and print to console
+
