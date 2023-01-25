@@ -1,65 +1,19 @@
+// imports
 const { ReadlineParser } = require("serialport");
-
 const { SerialPort } = eval("require('serialport')");
 const { path } = eval("require('path')");
-//function to enumerat over connectd serial ports
-// function listSerialPorts() {
-//     SerialPort.list().then(
-//         ports => ports.forEach(port => console.log(port.path)),
-//         err => console.error(err)
-//     )
-// }listSerialPorts();
 
-// async function that writes to comport 3 every second
-//  function writeSerial() {
-//     const port = new SerialPort('COM3', { baudRate: 9600 })
-//     while (port.isOpen) {
-//         console.log('port open')
-//         setInterval(async () => {
-//             try {
-//                 await port.write('hello from electron');
-//             } catch (err) {
-//                 console.error(err);
-//             }
-//         }, 1000);
-//     }
-//     port.on('open', () => {
-//         console.log('port open')
-//         setInterval(async () => {
-//             try {
-//                 await port.write('hello from electron');
-//             } catch (err) {
-//                 console.error(err);
-//             }
-//         }, 1000);
-
-//     })
-// }writeSerial();
-
-// async function that connects and writes to all open com ports every second
-// async function writeSerial() {
-//     const ports = await SerialPort.list();
-//     ports.forEach(async port => {
-//         const port = new SerialPort(port.path, { baudRate: 9600 })
-//         port.on('open', () => {
-//             console.log('port open')
-//             setInterval(async () => {
-//                 try {
-//                     await port.write('hello from electron');
-//                 } catch (err) {
-//                     console.error(err);
-//                 }
-//             }, 1000);
-//         })
-//     })
-// }writeSerial();
-
+//Serial communication funciton
 async function writeSerial() {
+  // gets list of com ports with device connected
   const ports = await SerialPort.list();
+  // loops through each port
     ports.forEach(async (currentPort) => {
-    console.log(currentPort.path);
+
+    // creates a new serial port object
     const portToWrite = new SerialPort({ path: currentPort.path , baudRate: 9600, parser: new ReadlineParser('\n') });
 
+    // opens the port
       portToWrite.on("open", () => {
         console.log(`port ${currentPort.path} open`);
         setInterval(async () => {
@@ -71,19 +25,17 @@ async function writeSerial() {
         }, 1000);
       });
       
+      // reads data from serial port
       portToWrite.on('data', (data) => {
         console.log(data)
         document.getElementById('serial').innerText = data[0].toString()
       })
 
 
-
+      // closes the port
       portToWrite.on("close", () => {
         console.log(`closing port ${currentPort.path}`);
       });portToWrite.close();
-
-
-
     });
 }writeSerial();
 

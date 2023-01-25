@@ -11,6 +11,14 @@
       <div class="content" id = 'TandL'>
         <h1 id = 'title'>WBT Control Software</h1>
         <img src="imgs/Meggitt_360.png" alt="Meggit Logo" id = 'logo'>
+
+        <div id = 'DirAndMaster'>
+          <div id = 'dir'>
+            <h1 id = 'outDir'>Output Directory:</h1>
+            <p id = 'curDir'></p>
+            <button id = 'changeDir'>Change Directory</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -23,7 +31,19 @@
       </div>
     </div>
 
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>Choose a directory to save the output files to.</p>
+        <input type="file" id="fileElem" multiple accept="*/*" webkitdirectory mozdirectory msdirectory odirectory directory style="display:none" onchange="handleFiles(this.files)">
+        <button id="fileSelect">Select Directory</button>
+      </div>
+    </div>
+
+
+
     <script src = "serial.js"></script>
+    <script src = "printout.js"></script>
   </body>
   
 </html>
