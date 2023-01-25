@@ -8,14 +8,14 @@ div#navbar.container {
   /* display: inline-block; */
   justify-content: space-between;
   align-items: center;
-  background-color: navy;
+  background-color: #555555;
   width: 100%;
   height: auto;
   overflow: auto;
   /* float: left; */
 }
 
-div#TandL.content{
+div#TandL.content {
   display: flex;
   padding: 1%;
 }
@@ -30,7 +30,8 @@ div#TandL.content{
   padding: 1rem;
 }
 
-#logo {
+img#logo {
+  display: none;
   float: left;
   position: relative;
   padding: 1rem;
@@ -38,22 +39,32 @@ div#TandL.content{
   height: auto;
   margin: 0;
 }
+
 /* remove default padding */
 
 
 /* css for modal id = myModal */
 .modal {
-  display: visible; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
+  display: visible;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Sit on top */
+  padding-top: 100px;
+  /* Location of the box */
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0, 0, 0); /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
 }
 
 /* css styling for modal-content */
@@ -72,51 +83,62 @@ div#TandL.content{
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  background-color: navy;
   width: 100%;
   height: auto;
   overflow: auto;
   float: left;
-} 
-
-#curDir{
-  color: white;
-  font-size: 2 rem;
-  width: auto;
-  float: left;
-  margin-top: auto;
-  margin-bottom: auto;
-  padding: 1rem;
 }
 
-h1#outDir{
+
+
+h1#outDir {
   color: white;
-  font-size: 2 rem;
+  font-size: 2rem;
   width: auto;
   float: left;
-  justify-content: left;
-  margin-top: auto;
-  margin-bottom: auto;
-  /* padding: 1rem; */
+  justify-content: start;
+  margin: 0.5rem;
+  padding: 0.25rem;
+  margin-bottom: 0%;
 }
 
-p#curDir{
+p#curDir {
   color: white;
-  font-size: 2 rem;
+  font-size: 1rem;
   width: auto;
   float: left;
-  margin-top: auto;
-  margin-bottom: auto;
-  padding: 1rem;
+  margin: 0.5rem;
+  margin-right: 10px;
+  margin-left: 10px;
+  padding-left: 0%;
+  padding: 0.25rem;
+  border: 2px solid white;
+  margin-top: 4px;
+  border-radius: 5px;
 }
 
-div#dir{
+div#dir {
   display: flex;
   flex-direction: column;
-  justify-content: left;
-  background-color: navy;
+  justify-content: start;
+  flex-wrap: wrap;
   width: 100%;
   height: auto;
   overflow: auto;
   float: left;
+  align-items: flex-start;
+  align-content: center;
+}
+
+button#changeDir {
+  /* color: white; */
+  border: 2px solid white;
+  border-radius: 20px;
+  padding: 0.25rem;
+  margin: 0.5rem;
+  margin-left: 12px;
+  font-size: 1rem;
+  height: auto;
+  float: left;
+
 }
