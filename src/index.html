@@ -23,11 +23,42 @@
     </div>
 
     <div class="container" id = 'main'>
-      <h3>Connected WBT's</h3>
-      <div class="content" id = 'Devices'>
-        <div id = 'serial'>
+      <h2 id = "bodyLabel">Connected WBT's</h2>
+      <div class = "container" id="WBTContainer">
+
+        <div class = 'WBTPanel'>
+
+          <div class = 'WBTHeader'>
+            <div class = "nameAndStat">
+              <h3>WBT 1</h3>
+              <div class = status>
+                <h3>Status:</h3>
+                <h3 class = 'curStatus'>Idle</h3>
+              </div> 
+            </div>
+            <div class = 'controls'>
+            <select command = 'commandSelect'>
+              <option value = '0'></option>
+              <option value = '1'>Full ATP</option>
+              <option value = '2'>Charge</option>
+              <option value = '3'>Discharge</option>
+              <option value = '4'>Storage/Shipping</option>
+              <option value = '5'>Shutdown</option>
+            </select>
+            <button class = 'SendCommand'>Execute</button>
+            </div>
+          </div>
+
+          <div class = 'WBTContent'>
+            <div class = 'WBTDataContent'>
+              <div class = 'WBTDataContentHeader'>
+                <h3>WBT Data</h3>
+              </div>
+            </div> 
+          </div>
 
         </div>
+  
       </div>
     </div>
 
@@ -39,8 +70,6 @@
         <button id="fileSelect">Select Directory</button>
       </div>
     </div>
-
-
 
     <script src = "serial.js"></script>
     <script src = "printout.js"></script>
