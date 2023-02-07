@@ -18,6 +18,7 @@
     "@electron/remote": "^2.0.9",
     "electron-squirrel-startup": "^1.0.0",
     "file-saver": "^2.0.5",
+    "jquery": "^3.6.3",
     "serialport": "^10.5.0"
   },
   "devDependencies": {
