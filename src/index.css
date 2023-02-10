@@ -149,71 +149,100 @@ h2#bodyLabel{
 
 div#WBTContainer.container{
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-flow: row wrap;
+  justify-content: flex-start;
   align-items: center;
   align-content: flex-start;
-  /* TODO: fix later */
-  /* width: 100%;  */
-  height: 100%;
+  min-width: 90%; 
+  min-height: 100%;
   overflow: auto;
   float: left;
   border: 4px solid black;
   border-radius: 10px;
   margin: 0.5rem;
-  flex-wrap: wrap;
 }
+
+/* div#WBTContainer.container{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(30% - 1rem), 1fr));
+  grid-gap: 0.5rem;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: flex-start;
+  min-width: 90%; 
+  min-height: 100%;
+  overflow: auto;
+  float: left;
+  border: 4px solid black;
+  border-radius: 10px;
+  margin: 0.5rem;
+} */
 
 div.WBTPanel{
   display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
+  flex-flow: column wrap;
   justify-content: space-between;
   align-items: flex-start;
   align-content: flex-start;
-  width: auto;
-  height: auto;
-  overflow: auto;
-  float: left;
+  min-width: calc(80% / 3);
+  max-width: calc(96% / 3);
+  overflow: hidden;
   border: 1px solid black;
   border-radius: 10px;
   margin: 0.5rem;
+  animation: fadeIn 0.3s;
 }
+/* div.WBTPanel{
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  align-content: flex-start;
+  overflow: hidden;
+  border: 1px solid black;
+  border-radius: 10px;
+  margin: 0.5rem;
+  animation: fadeIn 0.3s;
+} */
+
+
+
 
 div.WBTHeader{
   display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  min-width: 90%;
   width: auto;
   height: auto;
   float: left;
   margin: 0.1rem;
   padding: 0.1rem;
+
 }
 
 div.nameAndStat{
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  align-content: start;
-  width: 100%;
+  flex-flow: row nowrap;
   justify-content: space-between;
+  align-items: center;
+  min-width: 95%;
+  /* align-content: start; */
+  /* width: 100%; */
+  /* justify-content: space-around; */
 }
 
 div.nameAndStat h3{
   display: flex;
-  width: fit-content;
+  width: 80%;
   margin-top: 0.5em;
 }
 
 div.status{
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
   align-items: flex-start;
   align-content: flex-start;
   width: 50%;
@@ -222,11 +251,12 @@ div.status{
 }
 
 div.controls{
-  display: block;
-  flex-direction: column;
+  display: flex;
+  flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
-  align-content: flex-start;
+  width: 95%;
+  /* align-content: flex-start; */
   border: 1px solid black;
   border-radius: 10px;
   margin: 0.1rem;
@@ -235,6 +265,7 @@ div.controls{
 
 h3.curStatus{
   align-self: start;
+  padding-left: 2%;
 }
 
 div.WBTContent{
@@ -257,4 +288,14 @@ div.WBTDataContentHeader{
   border: 1px solid black;
   border-radius: 10px;
   margin: 0.5rem;
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

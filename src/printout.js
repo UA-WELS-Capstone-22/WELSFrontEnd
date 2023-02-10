@@ -3,7 +3,18 @@ const remote = require('@electron/remote');
 const { dialog } = remote;
 // const { saveAs } = require('file-saver');
 
+const modalHtml =`<div id="myModal" class="modal">
+<div class="modal-content">
+  <span class="close">&times;</span>
+  <p>Choose a directory to save the output files to.</p>
+  <input type="file" id="fileElem" multiple accept="*/*" webkitdirectory mozdirectory msdirectory odirectory directory style="display:none" onchange="handleFiles(this.files)">
+  <button id="fileSelect">Select Directory</button>
+</div>
+</div>`
 
+if (document.getElementById('myModal') == null) {
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
 setFileDir = document.getElementById('fileSelect');
 updateDir = document.getElementById('changeDir');
 dirLabel = document.getElementById('curDir');

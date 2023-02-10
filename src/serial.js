@@ -3,6 +3,7 @@ const { ByteLengthParser,DelimiterParser } = require("serialport");
 const { SerialPort } = eval("require('serialport')");
 const { path } = eval("require('path')");
 var $ = require( "jquery" );
+const { stat } = require("original-fs");
 // import parseData from './parse.js';
 
 //Serial communication funciton
@@ -53,6 +54,7 @@ class WBTList {
   // constructor
   constructor() {
     this.WBTs = []; // array of WBT objects
+    this.version = "1.0"; // version of WBT software to check against //
     this.initialize(); // initialize serial port
   }
 
@@ -71,13 +73,17 @@ class WBTList {
         console.log(`closing port ${this.port.path}`);
         // should anythign be done here?
       });
+      // might need to add event listener for data recieved to be passed to parsing function could also be in elsewhere
 
     } catch (error) {
       console.error(error);
     }
   }
 
+  // on connection to serial port, create and return SerialPort object 
+  // Baud rate is 9600
   async getPortAndInitializeSerialPort() {
+    //TODO: add error handling for when no device detected (ie add try catch)
     const port = await this.getPort();
     return new SerialPort({
       path: port.path,
@@ -85,14 +91,19 @@ class WBTList {
     });
   }
 
+  // get list of com ports with device connected
   async getPort() {
     const ports = await SerialPort.list();
     if (!ports || !ports.length) {
+      // devive not detected
       throw new Error("No device connected");
     }
     return ports[0];
   }
 
+  // this function allows for chaning of parser type and value as needed
+  // Arguemnts: type - type of parser to use (ByteLengthParser or DelimiterParser),
+  //            value - value to be passed to parser (length for ByteLengthParser, delimiter:String for DelimiterParser)
   initParser(type = "ByteLengthParser", value = 1) {
     let parser;
     switch (type) {
@@ -106,11 +117,12 @@ class WBTList {
         parser = new ByteLengthParser({ length: 1 });
     }
 
-    this.parser = parser;
-    this.port.pipe(parser);
+    this.parser = parser; // save parser to class variable
+    this.port.pipe(parser); // pipe parser to serial port
 
   }
 
+  // Parse function (WIP)
   parseData(data) {
     if (data.length == 7) {
       let address = data[0];
@@ -136,21 +148,21 @@ class WBTList {
     // r2 is the version response
     // if both are valid, then add WBT to WBTList
     // after r1 and r2 event listeners are removed, to save memory and prevent multiple listeners from being added
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 5; i++) {
       try{ // for instaces where no response is received / all wbt discovered
         let r1 = await this.assignAddress(i);
         this.parser.removeAllListeners();
         // console.log(r1); // commented out for testing
-        let r2 = await this.checkFirmwareVersion("1.0");
+        let r2 = await this.checkFirmwareVersion(this.version);
         // this.port.parser.off("data", () => {}); // commented out for potential future use if needed
         this.parser.removeAllListeners();
         // console.log(r2); // commented out for testing
         // await new Promise((resolve) => setTimeout(resolve, 100)); // commented out for testing
 
         // TODO: implement code below
-        // if (r1 && r2) {
-        //   this.WBTs.push(new WBT(i, r1, r2));
-        // }
+        if (r1 && r2) {
+          this.WBTs.push(new WBT(r1, r2));
+        }
       }
       catch(error){
         console.error(error);
@@ -179,10 +191,16 @@ class WBTList {
           // console.log(data); // log data received from serial port // commented out for testing
           // console.log(this.decodeHandshakeResponse(data));
           // confirm that data received is the same as the address sent and has been ACK'ed
-          if(this.decodeHandshakeResponse(data) === Addr.toString()+"ACK"){
+          let response = this.decodeHandshakeResponse(data);
+          if(response === Addr.toString()+"ACK"){
             clearTimeout(timeoutId); // clear timeout if response received
             // console.log("Response received for address: ",String.fromCharCode(data[0])); // log response received // commented out for testing
-            resolve(data); // returns data // DO NOT COMMENT OUT
+            resolve(response[0]); // returns data // DO NOT COMMENT OUT
+          }
+          else if(response === Addr.toString()){
+            // do nothing as this is a NACK
+            // TODO: test this
+            console.log("NACK received for address: ",String.fromCharCode(data[0]));  
           }
           else{
             reject(new Error("No response from WBT Address Assignment"));
@@ -208,10 +226,11 @@ class WBTList {
         // event listener for data received from serial port
         this.parser.on("data", (data) => {     
           // evaluate if firmware version received is compatible with firmware version sent
-          if (this.decodeHandshakeResponse(data) === "1.0") {
+          let response = this.decodeHandshakeResponse(data);
+          if (response === firmwareVersion) {
             clearTimeout(timeoutId); // clear timeout if response received
             // console.log("Response received for version: ",this.decodeHandshakeResponse(data));  // log response received // commented out for testing
-            resolve(data); // returns data // DO NOT COMMENT OUT
+            resolve(response); // returns data // DO NOT COMMENT OUT
           }
           else{
             // console.log("did not match in 241")
@@ -260,23 +279,67 @@ class WBTList {
 }
 
 class WBT {
-  constructor() {
-    this.WBTID = 0;
-    this.WBTAddress = '';
-    this.WBTStatus = '';
+  constructor(address, firmwareVersion) {
+    this.WBTAddress = address; // address of WBT
+    this.firmwareVersion = firmwareVersion; // firmware version of WBT
+    this.status = "Connected"; // status of WBT
+    this.WBTData = []; // array to store data from WBT
+    this.addToDOM(); // add WBT to DOM
   }
+  
+  // needs to be better way but this works
+  addToDOM() {
+    let wbtHTML = `
+      <div class = 'WBTPanel'>
+      <div class = 'WBTHeader'>
+        <div class = "nameAndStat">
+          <h3>WBT ${Number(this.WBTAddress) + 1}</h3>
+          <div class = status>
+            <h3>Status: </h3>
+            <h3 class = 'curStatus'>${this.status}</h3>
+          </div> 
+        </div>
+        <div class = 'controls'>
+          <a>Command: </a>
+          <select command = 'commandSelect'>
+            <option value = ''></option>
+            <option value = '00011'>Full ATP</option>
+            <option value = '00100'>Charge</option>
+            <option value = '00101'>Discharge</option>
+            <option value = '00111'>Storage/Shipping</option>
+            <option value = '11111'>Shutdown</option>
+          </select>
+          <button class = 'SendCommand' id = '${this.WBTAddress}'>Send Command</button>
+        </div>
+      </div>
+
+      <div class = 'WBTContent'>
+        <div class = 'WBTDataContent'>
+          <div class = 'WBTDataContentHeader'>
+            <h3>WBT Data</h3>
+          </div>
+        </div> 
+      </div>
+
+      </div>
+`
+    $("#WBTContainer").append(wbtHTML);
+  }
+  
+
 }
 
 var wbtList = new WBTList();
 console.log(wbtList);
 
-executeBttn = document.getElementById('1');
+// executeBttn = document.getElementById('1');
 
-executeBttn.addEventListener('click', () => {
-  console.log($('select').val());
-  x = $('select').val();
-  wbtList.port.write(x);
-})
+// executeBttn.addEventListener('click', () => {
+//   console.log($('select').val());
+//   x = $('select').val();
+//   wbtList.port.write(x);
+// })
+
 
 
 
@@ -289,38 +352,3 @@ executeBttn.addEventListener('click', () => {
 // parseData();
 // simple function to read from serial port and print to console
 
-// html for wbt panel, will be dynamically generated and added per wbt
-/*
-        <div class = 'WBTPanel'>
-
-          <div class = 'WBTHeader'>
-            <div class = "nameAndStat">
-              <h3>WBT 1</h3>
-              <div class = status>
-                <h3>Status:</h3>
-                <h3 class = 'curStatus'>Idle</h3>
-              </div> 
-            </div>
-            <div class = 'controls'>
-            <select command = 'commandSelect'>
-              <option value = '0'></option>
-              <option value = '1'>Full ATP</option>
-              <option value = '2'>Charge</option>
-              <option value = '3'>Discharge</option>
-              <option value = '4'>Storage/Shipping</option>
-              <option value = '5'>Shutdown</option>
-            </select>
-            <button class = 'SendCommand'>Execute</button>
-            </div>
-          </div>
-
-          <div class = 'WBTContent'>
-            <div class = 'WBTDataContent'>
-              <div class = 'WBTDataContentHeader'>
-                <h3>WBT Data</h3>
-              </div>
-            </div> 
-          </div>
-
-        </div>
-  */

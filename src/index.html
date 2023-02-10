@@ -26,53 +26,15 @@
       <h2 id = "bodyLabel">Connected WBT's</h2>
       <div class = "container" id="WBTContainer">
 
-        <div class = 'WBTPanel'>
 
-          <div class = 'WBTHeader'>
-            <div class = "nameAndStat">
-              <h3>WBT 1</h3>
-              <div class = status>
-                <h3>Status:</h3>
-                <h3 class = 'curStatus'>Idle</h3>
-              </div> 
-            </div>
-            <div class = 'controls'>
-            <select command = 'commandSelect'>
-              <option value = ''></option>
-              <option value = '00011'>Full ATP</option>
-              <option value = '00100'>Charge</option>
-              <option value = '00101'>Discharge</option>
-              <option value = '00111'>Storage/Shipping</option>
-              <option value = '11111'>Shutdown</option>
-            </select>
-            <button class = 'SendCommand' id = '1'>Execute</button>
-            </div>
-          </div>
-
-          <div class = 'WBTContent'>
-            <div class = 'WBTDataContent'>
-              <div class = 'WBTDataContentHeader'>
-                <h3>WBT Data</h3>
-              </div>
-            </div> 
-          </div>
-
-        </div>
   
       </div>
     </div>
 
-    <div id="myModal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <p>Choose a directory to save the output files to.</p>
-        <input type="file" id="fileElem" multiple accept="*/*" webkitdirectory mozdirectory msdirectory odirectory directory style="display:none" onchange="handleFiles(this.files)">
-        <button id="fileSelect">Select Directory</button>
-      </div>
-    </div>
+
 
     <script src = "serial.js"></script>
-    <script src = "printout.js"></script>
+    <!-- <script src = "printout.js"></script> -->
   </body>
   
 </html>
