@@ -11,6 +11,10 @@ const { stat } = require("original-fs");
 //TODO: add error handling
 //TODO: add data proceessing function
 //TODO: after data is parsed, add to html
+//TODO: creat write function so we are always writing in byte encoding
+//TODO: after handshake iterate through WBT list and send self test command waiting for response
+//TODO: update firmware version checking function to integerts to request 
+//TODO: for test timing store start UTC time and END UTC time when end command Rx'ed then calc for later
 
 /*
 async function readSerial() {
@@ -44,7 +48,7 @@ async function readSerial() {
       console.log(`closing port ${port.path}`);
     });portToRead.close();
   };
-
+git dsaf
 }readSerial();
 */
 
@@ -62,7 +66,8 @@ class WBTList {
   async initialize() {
     try {
       this.port = await this.getPortAndInitializeSerialPort();
-      this.initParser("DelimiterParser", "!");
+      // need to test two bang delimiter works
+      this.initParser("DelimiterParser", "!!");
       // this.initParser("ByteLengthParser", 1);
 
       this.port.on("open", () => {
@@ -148,7 +153,8 @@ class WBTList {
     // r2 is the version response
     // if both are valid, then add WBT to WBTList
     // after r1 and r2 event listeners are removed, to save memory and prevent multiple listeners from being added
-    for (let i = 0; i < 5; i++) {
+    // could add event listnr . data parsr for new device to add message
+    for (let i = 0; i < 6; i++) {
       try{ // for instaces where no response is received / all wbt discovered
         let r1 = await this.assignAddress(i);
         this.parser.removeAllListeners();
@@ -175,7 +181,7 @@ class WBTList {
   async assignAddress(Addr) {
     // Promise to send address and wait for response / timeout if failed
     return new Promise((resolve, reject) => {
-      this.port.write(Addr.toString(), () => {
+      this.port.write(Addr.toString(), 'binary', () => {
         // console.log("Address sent: ", i.toString()); // commented out for testing
         let timeoutId = setTimeout(() => {
           console.error("No response from WBT1");
@@ -242,6 +248,13 @@ class WBTList {
     });
   });
 } 
+
+  // create send function
+  // event based library for arduino
+  // note may be bottle neck on first WBT check data rate and control it
+  // TODO: create send function
+  // will want heart beat (.5 seconds) of status  
+
   // function to decode handshake response
   // NOTE: data recieved from serial port is ASCII values with max value of 255
   decodeHandshakeResponse(data) {
@@ -296,7 +309,7 @@ class WBT {
           <h3>WBT ${Number(this.WBTAddress) + 1}</h3>
           <div class = status>
             <h3>Status: </h3>
-            <h3 class = 'curStatus'>${this.status}</h3>
+            <h3 class = 'curStatus'> ${this.status}</h3>
           </div> 
         </div>
         <div class = 'controls'>
