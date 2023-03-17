@@ -7,14 +7,14 @@ const { stat } = require("original-fs");
 // import parseData from './parse.js';
 
 //Serial communication funciton
-//TODO: might not neede to iterate over all ports as only on wbt connects to pc/ get ary/ashton to advise
-//TODO: add error handling
-//TODO: add data proceessing function
-//TODO: after data is parsed, add to html
-//TODO: creat write function so we are always writing in byte encoding
-//TODO: after handshake iterate through WBT list and send self test command waiting for response
-//TODO: update firmware version checking function to integerts to request 
-//TODO: for test timing store start UTC time and END UTC time when end command Rx'ed then calc for later
+//TODO: might not neede to iterate over all ports as only on wbt connects to pc/ get ary/ashton to advise ~ TBD
+//TODO: add error handling ~ not started
+//TODO: add data proceessing function ~ not started
+//TODO: after data is parsed, add to html ~ in progress
+//TODO: creat write function so we are always writing in byte encoding ~ started
+//TODO: after handshake iterate through WBT list and send self test command waiting for response ~ started
+//TODO: update firmware version checking function to integerts to request  ~ not started
+//TODO: for test timing store start UTC time and END UTC time when end command Rx'ed then calc for later ~ not started
 
 /*
 async function readSerial() {
@@ -74,6 +74,7 @@ class WBTList {
         console.log(`port ${this.port.path} open`);
         this.Handshake();
       });
+
       this.port.on("close", () => {
         console.log(`closing port ${this.port.path}`);
         // should anythign be done here?
@@ -129,22 +130,56 @@ class WBTList {
 
   // Parse function (WIP)
   parseData(data) {
-    if (data.length == 7) {
-      let address = data[0];
-      console.log(address);
-      let WBUTemp = data.slice(1, 3);
-      console.log(((WBUTemp[0] & 0xff) << 8) | (WBUTemp[1] & 0xff));
-      let WBTTemp = data.slice(3, 5);
-      console.log(((WBTTemp[0] & 0xff) << 8) | (WBTTemp[1] & 0xff));
-      let Voltage = data[5];
-      console.log(Voltage);
-      let Current = data[6];
-      console.log(Current);
-    } else {
-      console.log(data);
+    let addr = (data[0] & 0xE0) >> 5 // verify
+    let format = data[0] & 0x1F
+    console.log(data);
+    console.log(format);
+    if(format >= 1 && format <= 5){
+        this.standardParse(addr,data)
     }
+
+    // if (data.length == 7) {
+    //   let address = data[0];
+    //   console.log(address);
+    //   let WBUTemp = data.slice(1, 3);
+    //   console.log(((WBUTemp[0] & 0xff) << 8) | (WBUTemp[1] & 0xff));
+    //   let WBTTemp = data.slice(3, 5);
+    //   console.log(((WBTTemp[0] & 0xff) << 8) | (WBTTemp[1] & 0xff));
+    //   let Voltage = data[5];
+    //   console.log(Voltage);
+    //   let Current = data[6];
+    //   console.log(Current);
+    // } else {
+    //   console.log(data);
+    // }
+    
   }
   
+  standardParse(addr,data){
+    console.log(data);
+    
+    let updates = {
+      WBU_temp:(data[1] << 8 | data[2]), 
+      WBT_temp:(data[3] << 8 | data[4]), 
+      Voltage: data[5], 
+      Current: data[6]
+    }
+    console.log("163");
+    this.WBTs[addr-1].updateData(updates);
+  }
+
+  //Write function to ensure that always writing bytes and to correct WBT
+  sendCommand(addr,cmd,data){ // i think this will work investigate later // need to test
+    if(data === undefined){
+      this.port.write(addr+cmd,'binary')
+      console.log()
+    }
+    else{
+      this.port.write(addr+cmd+data)
+    }
+  }
+
+
   async Handshake() { 
     // wait 5 seconds before sending data as arduino resets on serial connection open event
     await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -154,7 +189,7 @@ class WBTList {
     // if both are valid, then add WBT to WBTList
     // after r1 and r2 event listeners are removed, to save memory and prevent multiple listeners from being added
     // could add event listnr . data parsr for new device to add message
-    for (let i = 0; i < 6; i++) {
+    for (let i = 1; i < 3; i++) {
       try{ // for instaces where no response is received / all wbt discovered
         let r1 = await this.assignAddress(i);
         this.parser.removeAllListeners();
@@ -164,8 +199,10 @@ class WBTList {
         this.parser.removeAllListeners();
         // console.log(r2); // commented out for testing
         // await new Promise((resolve) => setTimeout(resolve, 100)); // commented out for testing
+        //let r3 = await this.selfTest(i)
 
-        // TODO: implement code below
+        // this.parser.removeAllListeners();
+        // TODO: implement code below // add r3 once self test is done
         if (r1 && r2) {
           this.WBTs.push(new WBT(r1, r2));
         }
@@ -176,16 +213,20 @@ class WBTList {
         //NOTE: console will not be available in final packaged app
       }
     }
+    this.parser.on("data", (data) => {
+      this.parseData(data);
+    })
   }
 
   async assignAddress(Addr) {
     // Promise to send address and wait for response / timeout if failed
     return new Promise((resolve, reject) => {
+      // NOTE: bin versions of char 1 and number 1 should be same// verify
       this.port.write(Addr.toString(), 'binary', () => {
         // console.log("Address sent: ", i.toString()); // commented out for testing
         let timeoutId = setTimeout(() => {
-          console.error("No response from WBT1");
-          reject(new Error("No response from WBT1"));
+          // console.error("No response from WBT" + Addr.toString());
+          reject(new Error("No response from WBT" + Addr.toString()));
         }, 3000);
 
         // could change delimiter if 1st wbt is sending addr back and causing error
@@ -247,8 +288,15 @@ class WBTList {
       
     });
   });
-} 
+  } 
 
+  async selfTest(Addr){
+    return new Promise((resolve,reject) => {
+      this.sendCommand(Addr,"10000")
+    }
+
+    )
+  }
   // create send function
   // event based library for arduino
   // note may be bottle neck on first WBT check data rate and control it
@@ -296,17 +344,22 @@ class WBT {
     this.WBTAddress = address; // address of WBT
     this.firmwareVersion = firmwareVersion; // firmware version of WBT
     this.status = "Connected"; // status of WBT
-    this.WBTData = []; // array to store data from WBT
+    this.WBTData = {}; // array to store data from WBT
     this.addToDOM(); // add WBT to DOM
+    let str = ".WBTPanel#"+(Number(address))
+    this.domRef = $(str);
+    this.domStatus = this.domRef.find("h3.curStatus");
+    this.domdata = this.domRef.find("div.Data");
+
   }
   
   // needs to be better way but this works
   addToDOM() {
     let wbtHTML = `
-      <div class = 'WBTPanel'>
+      <div class = 'WBTPanel' id = ${Number(this.WBTAddress) }>
       <div class = 'WBTHeader'>
         <div class = "nameAndStat">
-          <h3>WBT ${Number(this.WBTAddress) + 1}</h3>
+          <h3>WBT ${Number(this.WBTAddress) }</h3>
           <div class = status>
             <h3>Status: </h3>
             <h3 class = 'curStatus'> ${this.status}</h3>
@@ -331,6 +384,8 @@ class WBT {
           <div class = 'WBTDataContentHeader'>
             <h3>WBT Data</h3>
           </div>
+          <div class = 'Data'>
+          </div>
         </div> 
       </div>
 
@@ -339,29 +394,30 @@ class WBT {
     $("#WBTContainer").append(wbtHTML);
   }
   
+  updateData(data){
+    for(let key in data){
+      let qry = "#"+key
+      let dataItem = this.domdata.find(qry)
+      if(dataItem.length == 0){
+        this.domdata.append(
+          `
+          <p class = 'dataItem' id = '${key}'> ${key} : ${data[key]} </p>
+          `
+        )
+      }
+      else{
+        dataItem.text(
+          `
+          ${key} : ${data[key]} 
+          `
+        )
+      }
+    }
+  }
+
 
 }
 
 var wbtList = new WBTList();
 console.log(wbtList);
-
-// executeBttn = document.getElementById('1');
-
-// executeBttn.addEventListener('click', () => {
-//   console.log($('select').val());
-//   x = $('select').val();
-//   wbtList.port.write(x);
-// })
-
-
-
-
-
-
-
-
-
-
-// parseData();
-// simple function to read from serial port and print to console
 
