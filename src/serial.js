@@ -2,9 +2,9 @@
 const { ByteLengthParser,DelimiterParser } = require("serialport");
 const { SerialPort } = eval("require('serialport')");
 const { path } = eval("require('path')");
-var $ = require( "jquery" );
 const { stat } = require("original-fs");
 // import parseData from './parse.js';
+import { WBT } from './WBT.js';
 
 //Serial communication funciton
 //TODO: might not neede to iterate over all ports as only on wbt connects to pc/ get ary/ashton to advise ~ TBD
@@ -15,43 +15,6 @@ const { stat } = require("original-fs");
 //TODO: after handshake iterate through WBT list and send self test command waiting for response ~ started
 //TODO: update firmware version checking function to integerts to request  ~ not started
 //TODO: for test timing store start UTC time and END UTC time when end command Rx'ed then calc for later ~ not started
-
-/*
-async function readSerial() {
-  // gets list of com ports with device connected
-  const port = await SerialPort.list();
-  
-  async (port) => {
-    // creates a new serial port object
-    const portToRead = new SerialPort({ path: port.path , baudRate: 9600, parser: new ReadlineParser('\n') });
-
-    // opens the port
-    portToRead.on("open", () => {
-      console.log(`port ${port.path} open`);
-      setInterval(async () => {
-        try {
-          await portToRead.write("hello from electron");
-        } catch (err) {
-          console.error(err);
-        }
-      }, 1000);
-    });
-    
-    // reads data from serial port
-    portToRead.on('data', (data) => {
-      console.log(data)
-      // document.getElementById('serial').innerText = data[0].toString()
-    })
-
-    // closes the port
-    portToRead.on("close", () => {
-      console.log(`closing port ${port.path}`);
-    });portToRead.close();
-  };
-git dsaf
-}readSerial();
-*/
-
 
 // WBT class
 class WBTList {
@@ -179,7 +142,6 @@ class WBTList {
     }
   }
 
-
   async Handshake() { 
     // wait 5 seconds before sending data as arduino resets on serial connection open event
     await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -298,8 +260,6 @@ class WBTList {
     )
   }
   // create send function
-  // event based library for arduino
-  // note may be bottle neck on first WBT check data rate and control it
   // TODO: create send function
   // will want heart beat (.5 seconds) of status  
 
@@ -313,9 +273,7 @@ class WBTList {
     return str;
   }
   // NOTE: will likely need many decode functions here is good
-
-
-
+  
   addWBT(WBT) {
     this.WBTs.push(WBT);
   }
@@ -337,85 +295,6 @@ class WBTList {
       Object.assign(WBT, updates);
     }
   }
-}
-
-class WBT {
-  constructor(address, firmwareVersion) {
-    this.WBTAddress = address; // address of WBT
-    this.firmwareVersion = firmwareVersion; // firmware version of WBT
-    this.status = "Connected"; // status of WBT
-    this.WBTData = {}; // array to store data from WBT
-    this.addToDOM(); // add WBT to DOM
-    let str = ".WBTPanel#"+(Number(address))
-    this.domRef = $(str);
-    this.domStatus = this.domRef.find("h3.curStatus");
-    this.domdata = this.domRef.find("div.Data");
-
-  }
-  
-  // needs to be better way but this works
-  addToDOM() {
-    let wbtHTML = `
-      <div class = 'WBTPanel' id = ${Number(this.WBTAddress) }>
-      <div class = 'WBTHeader'>
-        <div class = "nameAndStat">
-          <h3>WBT ${Number(this.WBTAddress) }</h3>
-          <div class = status>
-            <h3>Status: </h3>
-            <h3 class = 'curStatus'> ${this.status}</h3>
-          </div> 
-        </div>
-        <div class = 'controls'>
-          <a>Command: </a>
-          <select command = 'commandSelect'>
-            <option value = ''></option>
-            <option value = '00011'>Full ATP</option>
-            <option value = '00100'>Charge</option>
-            <option value = '00101'>Discharge</option>
-            <option value = '00111'>Storage/Shipping</option>
-            <option value = '11111'>Shutdown</option>
-          </select>
-          <button class = 'SendCommand' id = '${this.WBTAddress}'>Send Command</button>
-        </div>
-      </div>
-
-      <div class = 'WBTContent'>
-        <div class = 'WBTDataContent'>
-          <div class = 'WBTDataContentHeader'>
-            <h3>WBT Data</h3>
-          </div>
-          <div class = 'Data'>
-          </div>
-        </div> 
-      </div>
-
-      </div>
-`
-    $("#WBTContainer").append(wbtHTML);
-  }
-  
-  updateData(data){
-    for(let key in data){
-      let qry = "#"+key
-      let dataItem = this.domdata.find(qry)
-      if(dataItem.length == 0){
-        this.domdata.append(
-          `
-          <p class = 'dataItem' id = '${key}'> ${key} : ${data[key]} </p>
-          `
-        )
-      }
-      else{
-        dataItem.text(
-          `
-          ${key} : ${data[key]} 
-          `
-        )
-      }
-    }
-  }
-
-
 }
 
 var wbtList = new WBTList();
