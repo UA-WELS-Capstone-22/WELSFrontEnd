@@ -15,10 +15,8 @@ const modalHtml =`<div id="myModal" class="modal">
 if (document.getElementById('myModal') == null) {
   document.body.insertAdjacentHTML('beforeend', modalHtml);
 }
-setFileDir = document.getElementById('fileSelect');
-updateDir = document.getElementById('changeDir');
-dirLabel = document.getElementById('curDir');
-var pth = ''
+
+
 
 var openFile = () =>  {
   dialog.showOpenDialog({ properties: ['openDirectory'] }).then(result => {
@@ -35,10 +33,24 @@ var openFile = () =>  {
     console.log(err)
   })
 }
+
+// works for now should update
+var updateCss = () =>{
+  document.getElementById('myModal').style.display = "none";
+}
+
+
+
+let setFileDir = document.getElementById('fileSelect');
 setFileDir.addEventListener('click', openFile);
+let updateDir = document.getElementById('changeDir');
 updateDir.addEventListener('click', openFile);
+let dirLabel = document.getElementById('curDir');
 
+var pth = ''
 
+let closeFileSelect = document.getElementsByClassName('close')[0];
+closeFileSelect.addEventListener('click',updateCss);
 
 // this works to save file, 
 // var file = new File([outDir], "test.txt", {type: "text/plain;charset=utf-8"});
