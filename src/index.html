@@ -2,13 +2,40 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Hello World!</title>
+    <title>WBT Control Software</title>
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
-    <h1>💖 Hello World!</h1>
-    <p>Welcome to your Electron application.</p>
-    <script src = "serial.js"></script>
+
+    <div class="container" id = 'navbar'>
+      <div class="content" id = 'TandL'>
+        <h1 id = 'title'>WBT Control Software</h1>
+        <img src="imgs/Meggitt_360.png" alt="Meggit Logo" id = 'logo'>
+
+        <div id = 'DirAndMaster'>
+          <div id = 'dir'>
+            <h1 id = 'outDir'>Output Directory:</h1>
+            <p id = 'curDir'></p>
+            <button id = 'changeDir'>Change Directory</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" id = 'main'>
+      <h2 id = "bodyLabel">Connected WBT's</h2>
+      <div class = "container" id="WBTContainer">
+
+
+  
+      </div>
+    </div>
+
+
+
+    <script type = "module" src = "WBT.js"></script>
+    <script type = "module" src = "serial.js"></script>
+    <script src = "printout.js"></script>
   </body>
   
 </html>

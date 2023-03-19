@@ -2,6 +2,300 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
     Arial, sans-serif;
   margin: auto;
-  max-width: 38rem;
-  padding: 2rem;
+}
+
+div#navbar.container {
+  /* display: inline-block; */
+  justify-content: space-between;
+  align-items: center;
+  background-color: #555555;
+  width: 100%;
+  height: auto;
+  overflow: auto;
+  /* float: left; */
+}
+
+div#TandL.content {
+  display: flex;
+  padding: 1%;
+}
+
+#title {
+  color: white;
+  font-size: 2 rem;
+  width: auto;
+  float: left;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: 1rem;
+}
+
+img#logo {
+  display: none;
+  float: left;
+  position: relative;
+  padding: 1rem;
+  /* width: 20%; */
+  height: auto;
+  margin: 0;
+}
+
+/* remove default padding */
+
+
+/* css for modal id = myModal */
+.modal {
+  display: visible;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Sit on top */
+  padding-top: 100px;
+  /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
+}
+
+/* css styling for modal-content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  border-radius: 5px;
+}
+
+/* css styling for div id = dir*/
+#dir {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  overflow: auto;
+  float: left;
+}
+
+h1#outDir {
+  color: white;
+  font-size: 2rem;
+  width: auto;
+  float: left;
+  justify-content: start;
+  margin: 0.5rem;
+  padding: 0.25rem;
+  margin-bottom: 0%;
+}
+
+p#curDir {
+  color: white;
+  font-size: 1rem;
+  width: auto;
+  float: left;
+  margin: 0.5rem;
+  margin-right: 10px;
+  margin-left: 10px;
+  padding-left: 0%;
+  padding: 0.25rem;
+  border: 2px solid white;
+  margin-top: 4px;
+  border-radius: 5px;
+}
+
+div#dir {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  flex-wrap: wrap;
+  width: 100%;
+  height: auto;
+  overflow: auto;
+  float: left;
+  align-items: flex-start;
+  align-content: center;
+}
+
+button#changeDir {
+  /* color: white; */
+  border: 2px solid white;
+  border-radius: 20px;
+  padding: 0.25rem;
+  margin: 0.5rem;
+  margin-left: 12px;
+  font-size: 1rem;
+  height: auto;
+  float: left;
+
+}
+
+/* start of WBT body content styling  */
+
+h2#bodyLabel{
+  padding-left: 1.75rem;
+}
+
+div#WBTContainer.container{
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: flex-start;
+  min-width: 90%; 
+  min-height: 100%;
+  overflow: auto;
+  float: left;
+  border: 4px solid black;
+  border-radius: 10px;
+  margin: 0.5rem;
+}
+
+/* div#WBTContainer.container{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(30% - 1rem), 1fr));
+  grid-gap: 0.5rem;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: flex-start;
+  min-width: 90%; 
+  min-height: 100%;
+  overflow: auto;
+  float: left;
+  border: 4px solid black;
+  border-radius: 10px;
+  margin: 0.5rem;
+} */
+
+div.WBTPanel{
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  align-content: flex-start;
+  min-width: calc(80% / 3);
+  max-width: calc(96% / 3);
+  overflow: hidden;
+  border: 1px solid black;
+  border-radius: 10px;
+  margin: 0.5rem;
+  animation: fadeIn 0.3s;
+}
+/* div.WBTPanel{
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  align-content: flex-start;
+  overflow: hidden;
+  border: 1px solid black;
+  border-radius: 10px;
+  margin: 0.5rem;
+  animation: fadeIn 0.3s;
+} */
+
+
+
+
+div.WBTHeader{
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  min-width: 90%;
+  width: auto;
+  height: auto;
+  float: left;
+  margin: 0.1rem;
+  padding: 0.1rem;
+
+}
+
+div.nameAndStat{
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 95%;
+  /* align-content: start; */
+  /* width: 100%; */
+  /* justify-content: space-around; */
+}
+
+div.nameAndStat h3{
+  display: flex;
+  width: 80%;
+  margin-top: 0.5em;
+}
+
+div.status{
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
+  align-items: flex-start;
+  align-content: flex-start;
+  width: 50%;
+  height: auto;
+  float: left;
+}
+
+div.controls{
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 95%;
+  /* align-content: flex-start; */
+  border: 1px solid black;
+  border-radius: 10px;
+  margin: 0.1rem;
+  padding: 0.5rem;
+}
+
+h3.curStatus{
+  align-self: start;
+  padding-left: 2%;
+}
+
+div.WBTContent{
+  display: flex;
+  float: left;
+  justify-content: start;
+}
+
+div.WBTDataContentHeader{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: start;
+  align-items: center;
+  align-content: start;
+  width: 100%;
+  height: auto;
+  overflow: auto;
+  float: left;
+  border: 1px solid black;
+  border-radius: 10px;
+  margin: 0.5rem;
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
