@@ -7,10 +7,17 @@ class WBT {
       this.WBTData = {}; // array to store data from WBT
       this.addToDOM(); // add WBT to DOM
       let str = ".WBTPanel#"+(Number(address))
-      this.domRef = $(str);
-      this.domStatus = this.domRef.find("h3.curStatus");
-      this.domdata = this.domRef.find("div.Data");
-  
+      this.$domRef = $(str);
+      this.$domStatus = this.$domRef.find("h3.curStatus");
+      this.$domdata = this.$domRef.find("div.Data");
+      this.$cmdButton = this.$domRef.find("button");
+      this.$cmdSelect = this.$domRef.find("select");
+      this.$cmdButton.on("click", () => {
+        if (this.$cmdSelect.val() != ""){
+          this.sendCommand(this.$cmdSelect.val());
+        }
+      });
+      
     }
     
     // needs to be better way but this works
@@ -29,9 +36,9 @@ class WBT {
             <a>Command: </a>
             <select command = 'commandSelect'>
               <option value = ''></option>
-              <option value = '00011'>Full ATP</option>
-              <option value = '00100'>Charge</option>
-              <option value = '00101'>Discharge</option>
+              <option value = '00001'>Full ATP</option>
+              <option value = '00010'>Charge</option>
+              <option value = '00110'>Discharge</option>
               <option value = '00111'>Storage/Shipping</option>
               <option value = '11111'>Shutdown</option>
             </select>
@@ -74,7 +81,12 @@ class WBT {
         }
       }
     }
-  
+    
+    sendCommand(cmd){
+      let msg = (Number(this.WBTAddress) & 0b111).toString(2).padStart(3,'0') + cmd 
+      console.log(msg)
+    }
+
   
   }
 
