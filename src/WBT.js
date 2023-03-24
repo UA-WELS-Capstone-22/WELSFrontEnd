@@ -1,9 +1,10 @@
 var $ = require( "jquery" );
 class WBT {
-    constructor(address, firmwareVersion) {
+    constructor(address, firmwareVersion,port) {
       this.WBTAddress = address; // address of WBT
       this.firmwareVersion = firmwareVersion; // firmware version of WBT
       this.status = "Connected"; // status of WBT
+      this.port = port
       this.WBTData = {}; // array to store data from WBT
       this.addToDOM(); // add WBT to DOM
       let str = ".WBTPanel#"+(Number(address))
@@ -83,10 +84,19 @@ class WBT {
     }
     
     sendCommand(cmd){
-      let msg = (Number(this.WBTAddress) & 0b111).toString(2).padStart(3,'0') + cmd 
+      let msg = this.strtobuf((Number(this.WBTAddress) & 0b111).toString(2).padStart(3,'0') + cmd,"binary" )
       console.log(msg)
+      this.port.write(msg);
     }
 
+    strtobuf(str){
+      // might need more
+      let buf = Buffer.alloc(0);
+      buf = Buffer.alloc(1);
+      buf.writeUInt8(parseInt(str,2));
+      console.log("buf:",buf)
+      return buf
+    }
   
   }
 

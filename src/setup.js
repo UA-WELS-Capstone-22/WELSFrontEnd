@@ -6,7 +6,7 @@ const { stat } = require("original-fs");
 const Buffer = require('buffer').Buffer;
 // import parseData from './parse.js';
 import { WBT } from './WBT.js';
-import { serialObj } from './serialObj.js';
+// import { serialObj } from './serialObj.js';
 //Serial communication funciton
 //TODO: might not neede to iterate over all ports as only on wbt connects to pc/ get ary/ashton to advise ~ TBD
 //TODO: add error handling ~ not started
@@ -115,7 +115,7 @@ class WBTList {
         // this.parser.removeAllListeners();
         // TODO: implement code below // add r3 once self test is done
         if (r1 && r2 && r3) {
-          this.WBTs.push(new WBT(i, r2));
+          this.WBTs.push(new WBT(i, r2, this.port));
         }
       }
       catch(error){
