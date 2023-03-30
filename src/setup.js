@@ -125,8 +125,8 @@ class WBTList {
       }
     }
     this.parser.on("data", (data) => {
-      console.log(data);
-      // this.parseData(data);
+      // console.log(data);
+      this.parseData(data);
     })
   }
 
@@ -173,7 +173,7 @@ class WBTList {
       this.port.write(this.strtobuf(addr+firmwareVersion), () => {
         let timeoutId = setTimeout(() => {
           reject(new Error("No response from WBT Firmware not Rx'ed")); // reject promise
-        }, 2000);
+        }, 3000);
         // event listener for data received from serial port
         this.parser.on("data", (data) => {     
           // evaluate if firmware version received is compatible with firmware version sent
@@ -195,6 +195,30 @@ class WBTList {
   });
   } 
 
+  async selfTest(Addr){
+    return new Promise((resolve, reject) => {
+      this.port.write(this.strtobuf(Addr+'10000'),"binary", () => {
+        let timeoutId = setTimeout(() => {
+          reject(new Error("No response from WBT, Self-test not Rx'ed")); // reject promise
+        }, 2000);
+        // event listener for data received from serial port
+        this.parser.on("data", (data) => {     
+          // evaluate if self test passed
+          if (data[0] >= 15) {
+            clearTimeout(timeoutId); // clear timeout if response received
+            console.log("Response received for self test: ",data);  // log response received // commented out for testing
+            resolve(data[0]); // returns data // DO NOT COMMENT OUT
+          }
+          else{
+            console.log(data);
+             reject(data); // reject promise if self test did not pass
+            // TODO: evaluate above reject if should be different ie sending an error message to user instead of data
+          }
+      });
+      
+    });
+  });
+}
     // Parse function (WIP)
   parseData(data) {
     let addr = (data[0] & 0xE0) >> 5 // verify
@@ -234,6 +258,14 @@ class WBTList {
     this.WBTs[addr-1].updateData(updates);
   }
 
+  impedanceParse(addr,data){
+    let updates = {
+      Impedance: data[1]
+    }
+    this.WBTs[addr-1].updateData(updates);
+  }
+
+
   //Write function to ensure that always writing bytes and to correct WBT
   sendCommand(addr,cmd,data){ // i think this will work investigate later // need to test
     if(data === undefined){
@@ -252,34 +284,6 @@ class WBTList {
     console.log("buf:",buf)
     return buf
   }
-
-
-  async selfTest(Addr){
-    return new Promise((resolve, reject) => {
-      this.port.write(this.strtobuf(Addr+'10000'), () => {
-        let timeoutId = setTimeout(() => {
-          reject(new Error("No response from WBT, Self-test not Rx'ed")); // reject promise
-        }, 2000);
-        // event listener for data received from serial port
-        this.parser.on("data", (data) => {     
-          // evaluate if self test passed
-          if (data[0] === 255) {
-            clearTimeout(timeoutId); // clear timeout if response received
-            //console.log("Response received for self test: ",data));  // log response received // commented out for testing
-            resolve(true); // returns data // DO NOT COMMENT OUT
-          }
-          else{
-             reject(data); // reject promise if self test did not pass
-            // TODO: evaluate above reject if should be different ie sending an error message to user instead of data
-          }
-      });
-      
-    });
-  });
-}
-  // create send function
-  // TODO: create send function
-  // will want heart beat (.5 seconds) of status  
 
   // function to decode handshake response
   // NOTE: data recieved from serial port is ASCII values with max value of 255

@@ -1,5 +1,7 @@
 // a pop up window which stores the file path selected by the user
 const remote = require('@electron/remote');
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
 const { dialog } = remote;
 // const { saveAs } = require('file-saver');
 
@@ -52,8 +54,18 @@ var pth = ''
 let closeFileSelect = document.getElementsByClassName('close')[0];
 closeFileSelect.addEventListener('click',updateCss);
 
+function createReport(){
+  // more todo but waiting for data
+  const doc = new PDFDocument();
+  doc.fontSize(25).text('Hello World!', 100, 100);
+  const writeStream = fs.createWriteStream(pth + '/test.pdf');
+  doc.pipe(writeStream);
+  doc.end();
+}
+
 // this works to save file, 
 // var file = new File([outDir], "test.txt", {type: "text/plain;charset=utf-8"});
 // saveAs(file);
 
 
+export {createReport}

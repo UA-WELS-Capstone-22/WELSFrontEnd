@@ -67,6 +67,17 @@ img#logo {
   /* Black w/ opacity */
 }
 
+div#DirAndMaster{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  overflow: auto;
+  float: left;
+}
+
 /* css styling for modal-content */
 .modal-content {
   background-color: #fefefe;
@@ -125,7 +136,29 @@ div#dir {
   overflow: auto;
   float: left;
   align-items: flex-start;
-  align-content: center;
+
+}
+
+div#master {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  overflow: auto;
+  float: left;
+}
+
+h1#masterLabel{
+  color: white;
+  font-size: 2rem;
+  width: auto;
+  float: left;
+  justify-content: start;
+  margin: 0.5rem;
+  padding: 0.25rem;
+  margin-bottom: 0%;
 }
 
 button#changeDir {
@@ -147,150 +180,131 @@ h2#bodyLabel{
   padding-left: 1.75rem;
 }
 
-div#WBTContainer.container{
+/* Global styles */
+* {
+  box-sizing: border-box;
+}
+
+/* Container styles */
+div#WBTContainer.container {
   display: flex;
-  flex-flow: row wrap;
+  flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
-  align-content: flex-start;
   min-width: 90%; 
-  min-height: 100%;
+  height: 100%;
   overflow: auto;
-  float: left;
   border: 4px solid black;
   border-radius: 10px;
   margin: 0.5rem;
 }
 
-/* div#WBTContainer.container{
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(30% - 1rem), 1fr));
-  grid-gap: 0.5rem;
-  justify-content: flex-start;
-  align-items: center;
-  align-content: flex-start;
-  min-width: 90%; 
-  min-height: 100%;
-  overflow: auto;
-  float: left;
-  border: 4px solid black;
-  border-radius: 10px;
-  margin: 0.5rem;
-} */
-
-div.WBTPanel{
+/* Panel styles */
+div.WBTPanel {
   display: flex;
-  flex-flow: column wrap;
+  flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  align-content: flex-start;
-  min-width: calc(80% / 3);
-  max-width: calc(96% / 3);
-  overflow: hidden;
+  min-width: calc(100% / 3 - 1rem);
+  max-width: calc(100% / 3 - 1rem);
   border: 1px solid black;
   border-radius: 10px;
   margin: 0.5rem;
   animation: fadeIn 0.3s;
+  overflow: hidden;
 }
-/* div.WBTPanel{
+
+/* Header styles */
+div.WBTHeader {
   display: flex;
-  flex-flow: column wrap;
-  justify-content: space-between;
-  align-items: flex-start;
-  align-content: flex-start;
-  overflow: hidden;
-  border: 1px solid black;
-  border-radius: 10px;
-  margin: 0.5rem;
-  animation: fadeIn 0.3s;
-} */
-
-
-
-
-div.WBTHeader{
-  display: flex;
-  flex-flow: row wrap;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  min-width: 90%;
-  width: auto;
-  height: auto;
-  float: left;
-  margin: 0.1rem;
-  padding: 0.1rem;
-
-}
-
-div.nameAndStat{
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-  align-items: center;
-  min-width: 95%;
-  /* align-content: start; */
-  /* width: 100%; */
-  /* justify-content: space-around; */
-}
-
-div.nameAndStat h3{
-  display: flex;
-  width: 80%;
-  margin-top: 0.5em;
-}
-
-div.status{
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: flex-end;
-  align-items: flex-start;
-  align-content: flex-start;
-  width: 50%;
-  height: auto;
-  float: left;
-}
-
-div.controls{
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-  align-items: center;
-  width: 95%;
-  /* align-content: flex-start; */
-  border: 1px solid black;
-  border-radius: 10px;
+  width: -webkit-fill-available;
   margin: 0.1rem;
   padding: 0.5rem;
 }
 
-h3.curStatus{
+div.nameAndStat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 95%;
+}
+
+div.nameAndStat h3 {
+  width: 80%;
+  margin-top: 0.5em;
+}
+
+div.status {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  width: 50%;
+}
+
+h3.curStatus {
   align-self: start;
   padding-left: 2%;
 }
 
-div.WBTContent{
+/* Controls styles */
+div.controls {
   display: flex;
-  float: left;
-  justify-content: start;
-}
-
-div.WBTDataContentHeader{
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: start;
+  justify-content: space-between;
   align-items: center;
-  align-content: start;
-  width: 100%;
-  height: auto;
-  overflow: auto;
-  float: left;
+  width: 95%;
   border: 1px solid black;
   border-radius: 10px;
-  margin: 0.5rem;
+  margin: 0.1rem;
+  padding: 0.5rem;
+
+  flex-grow: 1;
+}
+
+/* Content styles */
+div.WBTContent {
+  display: flex;
+  justify-content: flex-start;
+  flex-grow: 1;
+  width: -webkit-fill-available;
+  overflow: hidden;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid black;
+  border-radius: 10px;
+  margin: 0.6rem;
+}
+
+div.WBTDataContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  height: auto;
+  align-items: flex-start;
+
+  flex-grow: 1;
+  margin: 0.1rem;
+  padding: 0.5rem;
+
 }
 
 
+div.WBTDataContentHeader {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  overflow: auto;
+  padding: 0 0.5rem;
+  flex-grow: 1;
+}
+
+/* Animation styles */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -299,3 +313,4 @@ div.WBTDataContentHeader{
     opacity: 1;
   }
 }
+

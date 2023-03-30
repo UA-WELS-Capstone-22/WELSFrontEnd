@@ -18,6 +18,23 @@
             <p id = 'curDir'></p>
             <button id = 'changeDir'>Change Directory</button>
           </div>
+
+          <div id = 'master'>
+            <h1 id = 'masterLabel'>Master:</h1>
+            <div class = 'controls'>
+              <a>Command: </a>
+              <select command = 'commandSelect'>
+                <option value = ''></option>
+                <option value = '00001'>Full ATP</option>
+                <option value = '00010'>Charge</option>
+                <option value = '00110'>Discharge</option>
+                <option value = '00111'>Storage/Shipping</option>
+                <option value = '11111'>Shutdown</option>
+              </select>
+              <button class = 'SendCommand' id = '7'>Send Command</button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

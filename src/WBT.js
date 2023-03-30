@@ -1,4 +1,5 @@
 var $ = require( "jquery" );
+import {createReport} from './printout.js';
 class WBT {
     constructor(address, firmwareVersion,port) {
       this.WBTAddress = address; // address of WBT
@@ -16,6 +17,7 @@ class WBT {
       this.$cmdButton.on("click", () => {
         if (this.$cmdSelect.val() != ""){
           this.sendCommand(this.$cmdSelect.val());
+          // createReport(); // need to figure where and when to cal function, may get moved to setup.js
         }
       });
       
@@ -24,7 +26,7 @@ class WBT {
     // needs to be better way but this works
     addToDOM() {
       let wbtHTML = `
-        <div class = 'WBTPanel' id = ${Number(this.WBTAddress) }>
+      <div class = 'WBTPanel' id = ${Number(this.WBTAddress) }>
         <div class = 'WBTHeader'>
           <div class = "nameAndStat">
             <h3>WBT ${Number(this.WBTAddress) }</h3>
@@ -48,16 +50,16 @@ class WBT {
         </div>
   
         <div class = 'WBTContent'>
+          <div class = 'WBTDataContentHeader'>
+            <h3>WBT Data</h3>
+          </div>
           <div class = 'WBTDataContent'>
-            <div class = 'WBTDataContentHeader'>
-              <h3>WBT Data</h3>
-            </div>
             <div class = 'Data'>
             </div>
           </div> 
         </div>
   
-        </div>
+      </div>
   `
       $("#WBTContainer").append(wbtHTML);
     }
@@ -85,7 +87,6 @@ class WBT {
     
     sendCommand(cmd){
       let msg = this.strtobuf((Number(this.WBTAddress) & 0b111).toString(2).padStart(3,'0') + cmd,"binary" )
-      console.log(msg)
       this.port.write(msg);
     }
 
@@ -94,7 +95,7 @@ class WBT {
       let buf = Buffer.alloc(0);
       buf = Buffer.alloc(1);
       buf.writeUInt8(parseInt(str,2));
-      console.log("buf:",buf)
+      // console.log("buf:",buf)
       return buf
     }
   
