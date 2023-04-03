@@ -4,8 +4,9 @@ const { SerialPort } = eval("require('serialport')");
 const { path } = eval("require('path')");
 const { stat } = require("original-fs");
 const Buffer = require('buffer').Buffer;
-// import parseData from './parse.js';
 import { WBT } from './WBT.js';
+import * as utils from './utils.js';
+
 // import { serialObj } from './serialObj.js';
 //Serial communication funciton
 //TODO: might not neede to iterate over all ports as only on wbt connects to pc/ get ary/ashton to advise ~ TBD
@@ -94,7 +95,6 @@ class WBTList {
 
   }
 
-
   async Handshake() { 
     // wait 5 seconds before sending data as arduino resets on serial connection open event
     await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -125,15 +125,15 @@ class WBTList {
       }
     }
     this.parser.on("data", (data) => {
-      // console.log(data);
-      this.parseData(data);
+      console.log(data);
+      // this.parseData(data);
     })
   }
 
   async assignAddress(Addr) {
     // Promise to send address and wait for response / timeout if failed
     return new Promise((resolve, reject) => {
-      this.port.write(this.strtobuf(Addr),  () => {
+      this.port.write(utils.strtobuf(Addr),  () => {
         let timeoutId = setTimeout(() => {
           reject(new Error("No response from WBT" + Addr.toString()));
         }, 3000);
@@ -146,7 +146,7 @@ class WBTList {
         this.parser.on("data", (data) => {
 
           // confirm that data received is the same as the address sent and has been ACK'ed
-          let response = this.decodeAdr(data);
+          let response = utils.decodeAdr(data);
           if(response === "ACK"){
             clearTimeout(timeoutId); // clear timeout if response received
             // console.log("Response received for address: ",String.fromCharCode(data[0])); // log response received // commented out for testing
@@ -170,14 +170,14 @@ class WBTList {
   async checkFirmwareVersion(firmwareVersion,addr) {
     // Promise to send firmware version and wait for response / timeout if failed
     return new Promise((resolve, reject) => {
-      this.port.write(this.strtobuf(addr+firmwareVersion), () => {
+      this.port.write(utils.strtobuf(addr+firmwareVersion), () => {
         let timeoutId = setTimeout(() => {
           reject(new Error("No response from WBT Firmware not Rx'ed")); // reject promise
         }, 3000);
         // event listener for data received from serial port
         this.parser.on("data", (data) => {     
           // evaluate if firmware version received is compatible with firmware version sent
-          let response = this.decodeHandshakeResponse(data);
+          let response = utils.decodeHandshakeResponse(data);
           console.log('response:',response);
           if (response === this.versionstr) {
             clearTimeout(timeoutId); // clear timeout if response received
@@ -197,20 +197,26 @@ class WBTList {
 
   async selfTest(Addr){
     return new Promise((resolve, reject) => {
-      this.port.write(this.strtobuf(Addr+'10000'),"binary", () => {
+      this.port.write(utils.strtobuf(Addr+'10000'),"binary", () => {
         let timeoutId = setTimeout(() => {
           reject(new Error("No response from WBT, Self-test not Rx'ed")); // reject promise
         }, 2000);
         // event listener for data received from serial port
         this.parser.on("data", (data) => {     
           // evaluate if self test passed
-          if (data[0] >= 15) {
+          // console.log(data)
+          // remove === 0 for testing
+          let response = utils.parseData(data);
+          if (response.length === 0) {
             clearTimeout(timeoutId); // clear timeout if response received
             console.log("Response received for self test: ",data);  // log response received // commented out for testing
             resolve(data[0]); // returns data // DO NOT COMMENT OUT
           }
           else{
-            console.log(data);
+            // console.log(data);
+            for(msg in data){
+              console.log(msg);
+            }
              reject(data); // reject promise if self test did not pass
             // TODO: evaluate above reject if should be different ie sending an error message to user instead of data
           }
@@ -244,7 +250,7 @@ class WBTList {
     //   console.log(data);
     // }
     
-  }
+  } 
   
   standardParse(addr,data){
     console.log(data);
@@ -265,44 +271,6 @@ class WBTList {
     this.WBTs[addr-1].updateData(updates);
   }
 
-
-  //Write function to ensure that always writing bytes and to correct WBT
-  sendCommand(addr,cmd,data){ // i think this will work investigate later // need to test
-    if(data === undefined){
-      this.port.write(addr+cmd,'binary')
-    }
-    else{
-      this.port.write(addr+cmd+data)
-    }
-  }
-
-  strtobuf(str){
-    // might need more
-    let buf = Buffer.alloc(0);
-    buf = Buffer.alloc(1);
-    buf.writeUInt8(parseInt(str,2));
-    console.log("buf:",buf)
-    return buf
-  }
-
-  // function to decode handshake response
-  // NOTE: data recieved from serial port is ASCII values with max value of 255
-  decodeHandshakeResponse(data) {
-    let str = ((data[0] >> 4) & 0b00001111).toString() + "." + (data[0] & 0b00001111).toString()  
-    return str;
-  }
-
-  decodeAdr(data) {
-    let str = ''; // string to store decoded data
-    for (let i = 1; i < data.length; i++) {
-      str += String.fromCharCode(data[i]); // convert data to string
-    }
-    return str;
-  }
-
-
-  // NOTE: will likely need many decode functions here is good
-  
   addWBT(WBT) {
     this.WBTs.push(WBT);
   }
@@ -329,3 +297,12 @@ class WBTList {
 var wbtList = new WBTList();
 console.log(wbtList);
 
+// adds event listener when the SendCommand button inside div with id "master" is clicked
+document.getElementById(7).addEventListener("click", function () {
+  // get the value of the input box
+  let input = document.getElementById("MasterCmdVal").value;
+  // send the value to the serial port
+  utils.sendCommand(wbtList.port, 7 ,input);
+  // need to creat function that will update all WBT status's
+
+});
