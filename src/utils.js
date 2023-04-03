@@ -33,52 +33,52 @@ function parseData(data){
 
   switch (cmd) {
     case 0b00000:
-      // self test
+      // self test // justs needs to know if pass or fail. t/f works
       return parseSelfTest(data[1]);
       break;
     case 0b00001:
-      //Serial number
+      //Serial number // needs to return string to be updated (needs WBTList)
       return parseSerialNumber(data);
       break;
     case 0b00010:
-      // data dump
+      // data dump // needs to be stored somewhere, maybe in WBT object? 
+      break;
+    case 0b00011:
+      // data test // t/f
       if(data[1] == 0){
         return false;
       }
       return true;
-    case 0b00011:
-      // data test
-      break;
     case 0b00100:
-      // charge cont.
+      // charge cont.  // needs to return string to be updated (needs WBTList)
       standardParse(data);
       break;
     case 0b00101:
-      // impedance
+      // impedance  // returns impedance
       break;
     case 0b00110:
-      // trip test
+      // trip test // returns time
       break;
     case 0b00111:
-      // hold test
+      // hold test  // needs to return string to be updated (needs WBTList)
       standardParse(data);
       break;
     case 0b01000:
-      // full discharge
+      // full discharge // needs to return string to be updated (needs WBTList)
       standardParse(data);
       break;
     case 0b01001:
-      // store/ship 
+      // store/ship  // needs to return string to be updated (needs WBTList)
       standardParse(data);
       break;
     case 0b11000:
-      // atp complete
+      // atp complete // generate report & update state to idle?
       break;
     case 0b11001:
-      // test complete
+      // test complete // generate report & updates state to idle?
       break;
     case 0b11111:
-      // general error
+      // general error // display error message on screen?
       break;
     default:
       //
