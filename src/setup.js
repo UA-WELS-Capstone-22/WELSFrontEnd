@@ -126,6 +126,16 @@ class WBTList {
     }
     this.parser.on("data", (data) => {
       console.log(data);
+      // utils.parseData(data);
+
+      // 2 options:
+
+      /*
+      1) call parse function in utils, store response, then call function to act on response
+      2) call parse function in utils, pass in wbtList and give utils access to wbtList
+      3) move parse back to setup, have parse function call utils, and then parse can act on response
+      */
+
       // this.parseData(data);
     })
   }
@@ -231,9 +241,10 @@ class WBTList {
     let format = data[0] & 0x1F
     console.log(data);
     console.log(format);
-    if(format >= 1 && format <= 5){
-        this.standardParse(addr,data)
-    }
+
+    // if(format >= 1 && format <= 5){
+    //     this.standardParse(addr,data)
+    // }
 
     // if (data.length == 7) {
     //   let address = data[0];
