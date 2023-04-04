@@ -106,12 +106,12 @@ function parseSelfTest(data){
 }
 
 function parseSerialNumber(data){
-  let str = String.fromCharCode(data[1])
-   + String.fromCharCode(data[2])
-   + String(data[3])
+  let str = String.fromCharCode(data[2])
+   + String.fromCharCode(data[3])
    + String(data[4])
    + String(data[5])
    + String(data[6])
+   + String(data[7])
   return str;
 }
 
@@ -145,6 +145,7 @@ function addToDOM(Address) {
           <option value = '00010'>Charge</option>
           <option value = '00110'>Discharge</option>
           <option value = '00111'>Storage/Shipping</option>
+          <option value = '10001'>Data Dump</option>
           <option value = '11111'>Shutdown</option>
         </select>
         <button class = 'SendCommand' id = '${Address}'>Send Command</button>
@@ -175,11 +176,17 @@ function addToDOM(Address) {
 
 
 
+
+
+
+
+
 export{ 
   strtobuf,
   sendCommand,
   decodeHandshakeResponse,
   decodeAdr,
   parseData,
-  addToDOM
+  addToDOM,
+  parseSerialNumber
 }

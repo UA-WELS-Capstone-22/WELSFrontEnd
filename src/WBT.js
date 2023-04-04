@@ -1,6 +1,6 @@
 var $ = require( "jquery" );
 import * as utils from './utils.js';
-import {createReport} from './printout.js';
+import {createReport,createDataDump} from './printout.js';
 class WBT {
     constructor(address, firmwareVersion,port) {
       this.WBTAddress = address; // address of WBT

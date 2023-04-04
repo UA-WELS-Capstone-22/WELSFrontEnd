@@ -6,6 +6,8 @@ const { stat } = require("original-fs");
 const Buffer = require('buffer').Buffer;
 import { WBT } from './WBT.js';
 import * as utils from './utils.js';
+import * as hs from './handshake.js';
+import * as rpts from './printout.js';
 
 // import { serialObj } from './serialObj.js';
 //Serial communication funciton
@@ -41,7 +43,6 @@ class WBTList {
         console.log(`port ${this.port.path} open`);
         this.Handshake();
       });
-
       this.port.on("close", () => {
         console.log(`closing port ${this.port.path}`);
         // should anythign be done here?
@@ -106,13 +107,15 @@ class WBTList {
     // could add event listnr . data parsr for new device to add message
     for (let i = 1; i < 2; i++) {
       try{ // for instaces where no response is received / all wbt discovered
-        let r1 = await this.assignAddress((i & 0b111).toString(2).padStart(3,'0'));
+        let r1 = await hs.assignAddress(this.port,this.parser,(i & 0b111).toString(2).padStart(3,'0'));
         this.parser.removeAllListeners();
-        let r2 = await this.checkFirmwareVersion(this.version,(i & 0b111).toString(2).padStart(3,'0'));
+        let r2 = await hs.checkFirmwareVersion(this.port,this.parser,this.version,(i & 0b111).toString(2).padStart(3,'0'));
         this.parser.removeAllListeners();
-        let r3 = await this.selfTest((i & 0b111).toString(2).padStart(3,'0'))
+        let r3 = await hs.selfTest(this.port,this.parser,(i & 0b111).toString(2).padStart(3,'0'))
         this.parser.removeAllListeners();
-        // this.parser.removeAllListeners();
+        let r4 = await hs.getSerialNumber(this.port,this.parser,(i & 0b111).toString(2).padStart(3,'0'))        
+        this.parser.removeAllListeners();
+        console.log(r4);
         // TODO: implement code below // add r3 once self test is done
         if (r1 && r2 && r3) {
           this.WBTs.push(new WBT(i, r2, this.port));
@@ -123,9 +126,19 @@ class WBTList {
         //TODO: on error here determine whether or not to display message to user of error
         //NOTE: console will not be available in final packaged app
       }
+      this.parser._read(); // clear buffer
     }
     this.parser.on("data", (data) => {
       console.log(data);
+      // for datadump, ignore first byte if consistenly 0 
+      // rpts.createDataDump(data.slice(1));
+      // if(data[0] & 0b11111111 == 0b00010){
+      //   console.log('creating log')
+      //   rpts.createDataDump(data);
+      // }
+      // else{
+      //   console.log(data);
+      // }
       // utils.parseData(data);
 
       // 2 options:
@@ -140,101 +153,7 @@ class WBTList {
     })
   }
 
-  async assignAddress(Addr) {
-    // Promise to send address and wait for response / timeout if failed
-    return new Promise((resolve, reject) => {
-      this.port.write(utils.strtobuf(Addr),  () => {
-        let timeoutId = setTimeout(() => {
-          reject(new Error("No response from WBT" + Addr.toString()));
-        }, 3000);
 
-        // could change delimiter if 1st wbt is sending addr back and causing error
-        // could also solve this by adding dest addrs by specifing msg is for host
-        // or my understanding is just wrong
-
-        // below is event listener for data received from serial port
-        this.parser.on("data", (data) => {
-
-          // confirm that data received is the same as the address sent and has been ACK'ed
-          let response = utils.decodeAdr(data);
-          if(response === "ACK"){
-            clearTimeout(timeoutId); // clear timeout if response received
-            // console.log("Response received for address: ",String.fromCharCode(data[0])); // log response received // commented out for testing
-            resolve(response[0]); // returns data // DO NOT COMMENT OUT
-          }
-          else if(response === Addr.toString()){
-            // do nothing as this is a NACK
-            // TODO: test this
-            console.log("NACK received for address: ",String.fromCharCode(data[0]));  
-          }
-          else{
-            reject(new Error("No response from WBT Address Assignment"));
-          }
-        });
-      });
-
-    });
-  }
-  
-  //NOTE: this function should do a compantibility check with the WBT not just check equality 
-  async checkFirmwareVersion(firmwareVersion,addr) {
-    // Promise to send firmware version and wait for response / timeout if failed
-    return new Promise((resolve, reject) => {
-      this.port.write(utils.strtobuf(addr+firmwareVersion), () => {
-        let timeoutId = setTimeout(() => {
-          reject(new Error("No response from WBT Firmware not Rx'ed")); // reject promise
-        }, 3000);
-        // event listener for data received from serial port
-        this.parser.on("data", (data) => {     
-          // evaluate if firmware version received is compatible with firmware version sent
-          let response = utils.decodeHandshakeResponse(data);
-          console.log('response:',response);
-          if (response === this.versionstr) {
-            clearTimeout(timeoutId); // clear timeout if response received
-            //console.log("Response received for version: ",this.decodeHandshakeResponse(data));  // log response received // commented out for testing
-            resolve(response); // returns data // DO NOT COMMENT OUT
-          }
-          else{
-            //console.log("did not match in 241")
-             reject(data); // reject promise if firmware version received is not compatible with firmware version sent 
-            // TODO: evaluate above reject if should be different ie sending an error message to user instead of data
-          }
-      });
-      
-    });
-  });
-  } 
-
-  async selfTest(Addr){
-    return new Promise((resolve, reject) => {
-      this.port.write(utils.strtobuf(Addr+'10000'),"binary", () => {
-        let timeoutId = setTimeout(() => {
-          reject(new Error("No response from WBT, Self-test not Rx'ed")); // reject promise
-        }, 2000);
-        // event listener for data received from serial port
-        this.parser.on("data", (data) => {     
-          // evaluate if self test passed
-          // console.log(data)
-          // remove === 0 for testing
-          let response = utils.parseData(data);
-          if (response.length === 0) {
-            clearTimeout(timeoutId); // clear timeout if response received
-            console.log("Response received for self test: ",data);  // log response received // commented out for testing
-            resolve(data[0]); // returns data // DO NOT COMMENT OUT
-          }
-          else{
-            // console.log(data);
-            for(msg in data){
-              console.log(msg);
-            }
-             reject(data); // reject promise if self test did not pass
-            // TODO: evaluate above reject if should be different ie sending an error message to user instead of data
-          }
-      });
-      
-    });
-  });
-}
     // Parse function (WIP)
   parseData(data) {
     let addr = (data[0] & 0xE0) >> 5 // verify

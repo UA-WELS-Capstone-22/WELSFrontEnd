@@ -3,6 +3,8 @@ const remote = require('@electron/remote');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const { dialog } = remote;
+import * as utils from './utils.js';
+
 // const { saveAs } = require('file-saver');
 
 const modalHtml =`<div id="myModal" class="modal">
@@ -63,9 +65,20 @@ function createReport(){
   doc.end();
 }
 
+function createDataDump(data){
+  console.log("starting write")
+  const fstrm = fs.createWriteStream(pth +"\\"+utils.parseSerialNumber(data)+'.dat');
+  fstrm.write(data.slice(0));
+  console.log(fstrm)
+  console.log(data.slice(0))
+  fstrm.end();
+  console.log("finished write")
+}
+
+
 // this works to save file, 
 // var file = new File([outDir], "test.txt", {type: "text/plain;charset=utf-8"});
 // saveAs(file);
 
 
-export {createReport}
+export {createReport, createDataDump}
