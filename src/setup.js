@@ -43,6 +43,12 @@ class WBTList {
         console.log(`port ${this.port.path} open`);
         this.Handshake();
       });
+
+      this.parser.on("data", (data) => {
+        console.log("data recieved");
+        utils.parseData(this,data);
+      });
+
       this.port.on("close", () => {
         console.log(`closing port ${this.port.path}`);
         // should anythign be done here?
@@ -70,7 +76,9 @@ class WBTList {
     const ports = await SerialPort.list();
     if (!ports || !ports.length) {
       // devive not detected
-      throw new Error("No device connected");
+      // throw new Error("No device connected");
+      console.log("No device connected");
+      console.log("ports:", ports);
     }
     return ports[0];
   }
@@ -105,7 +113,7 @@ class WBTList {
     // if both are valid, then add WBT to WBTList
     // after r1 and r2 event listeners are removed, to save memory and prevent multiple listeners from being added
     // could add event listnr . data parsr for new device to add message
-    for (let i = 1; i < 2; i++) {
+    for (let i = 1; i < 4; i++) {
       try{ // for instaces where no response is received / all wbt discovered
         let r1 = await hs.assignAddress(this.port,this.parser,(i & 0b111).toString(2).padStart(3,'0'));
         this.parser.removeAllListeners();
@@ -129,59 +137,30 @@ class WBTList {
       this.parser._read(); // clear buffer
     }
     this.parser.on("data", (data) => {
-      console.log(data);
-      // for datadump, ignore first byte if consistenly 0 
-      // rpts.createDataDump(data.slice(1));
-      // if(data[0] & 0b11111111 == 0b00010){
-      //   console.log('creating log')
-      //   rpts.createDataDump(data);
-      // }
-      // else{
-      //   console.log(data);
-      // }
-      // utils.parseData(data);
+    //   // console.log(data);
+    //   // for datadump, ignore first byte if consistenly 0 
+    //   // rpts.createDataDump(data.slice(1));
+    //   // if(data[0] & 0b11111111 == 0b00010){
+    //   //   console.log('creating log')
+    //   //   rpts.createDataDump(data);
+    //   // }
+    //   // else{
+    //   //   console.log(data);
+    //   // }
+    //   // utils.parseData(data);
 
-      // 2 options:
+    //   // 2 options:
 
-      /*
-      1) call parse function in utils, store response, then call function to act on response
-      2) call parse function in utils, pass in wbtList and give utils access to wbtList
-      3) move parse back to setup, have parse function call utils, and then parse can act on response
-      */
+    //   /*
+    //   1) call parse function in utils, store response, then call function to act on response
+    //   2) call parse function in utils, pass in wbtList and give utils access to wbtList
+    //   3) move parse back to setup, have parse function call utils, and then parse can act on response
+    //   */
 
-      // this.parseData(data);
+      utils.parseData(this,data);
     })
   }
 
-
-    // Parse function (WIP)
-  parseData(data) {
-    let addr = (data[0] & 0xE0) >> 5 // verify
-    let format = data[0] & 0x1F
-    console.log(data);
-    console.log(format);
-
-    // if(format >= 1 && format <= 5){
-    //     this.standardParse(addr,data)
-    // }
-
-    // if (data.length == 7) {
-    //   let address = data[0];
-    //   console.log(address);
-    //   let WBUTemp = data.slice(1, 3);
-    //   console.log(((WBUTemp[0] & 0xff) << 8) | (WBUTemp[1] & 0xff));
-    //   let WBTTemp = data.slice(3, 5);
-    //   console.log(((WBTTemp[0] & 0xff) << 8) | (WBTTemp[1] & 0xff));
-    //   let Voltage = data[5];
-    //   console.log(Voltage);
-    //   let Current = data[6];
-    //   console.log(Current);
-    // } else {
-    //   console.log(data);
-    // }
-    
-  } 
-  
   standardParse(addr,data){
     console.log(data);
     

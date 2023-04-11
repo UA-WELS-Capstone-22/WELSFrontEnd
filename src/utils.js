@@ -27,19 +27,17 @@ function decodeAdr(data) {
   return str;
 }
 
-function parseData(data){
+function parseData(caller,data){
   let addr = (data[0] & 0xE0) >> 5;
   let cmd = data[0] & 0x1F;
-
+  console.log(caller);
   switch (cmd) {
     case 0b00000:
       // self test // justs needs to know if pass or fail. t/f works
       return parseSelfTest(data[1]);
-      break;
     case 0b00001:
       //Serial number // needs to return string to be updated (needs WBTList)
       return parseSerialNumber(data);
-      break;
     case 0b00010:
       // data dump // needs to be stored somewhere, maybe in WBT object? 
       break;
@@ -51,7 +49,7 @@ function parseData(data){
       return true;
     case 0b00100:
       // charge cont.  // needs to return string to be updated (needs WBTList)
-      standardParse(data);
+      caller.WBTs[addr-1].updateData(standardParse(data));;
       break;
     case 0b00101:
       // impedance  // returns impedance
@@ -61,15 +59,15 @@ function parseData(data){
       break;
     case 0b00111:
       // hold test  // needs to return string to be updated (needs WBTList)
-      standardParse(data);
+      caller.WBTs[addr-1].updateData(standardParse(data));
       break;
     case 0b01000:
       // full discharge // needs to return string to be updated (needs WBTList)
-      standardParse(data);
+      caller.WBTs[addr-1].updateData(standardParse(data));
       break;
     case 0b01001:
       // store/ship  // needs to return string to be updated (needs WBTList)
-      standardParse(data);
+      caller.WBTs[addr-1].updateData(standardParse(data));
       break;
     case 0b11000:
       // atp complete // generate report & update state to idle?

@@ -32,9 +32,9 @@ class WBT {
     updateData(data){
       for(let key in data){
         let qry = "#"+key
-        let dataItem = this.domdata.find(qry)
+        let dataItem = this.$domdata.find(qry)
         if(dataItem.length == 0){
-          this.domdata.append(
+          this.$domdata.append(
             `
             <p class = 'dataItem' id = '${key}'> ${key} : ${data[key]} </p>
             `
