@@ -140,10 +140,11 @@ function addToDOM(Address) {
         <select command = 'commandSelect'>
           <option value = ''></option>
           <option value = '00001'>Full ATP</option>
-          <option value = '00010'>Charge</option>
+          <option value = '00010'>Charge</option> 
           <option value = '00110'>Discharge</option>
           <option value = '00111'>Storage/Shipping</option>
           <option value = '10001'>Data Dump</option>
+          <option value = '10010'>Identify device</option>
           <option value = '11111'>Shutdown</option>
         </select>
         <button class = 'SendCommand' id = '${Address}'>Send Command</button>
