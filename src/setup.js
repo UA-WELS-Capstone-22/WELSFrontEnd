@@ -74,13 +74,25 @@ class WBTList {
   // get list of com ports with device connected
   async getPort() {
     const ports = await SerialPort.list();
+    // console.log("ports:", ports);
     if (!ports || !ports.length) {
       // devive not detected
       // throw new Error("No device connected");
       console.log("No device connected");
       console.log("ports:", ports);
     }
-    return ports[0];
+    else if(ports.length > 1) {
+      // multiple devices detected
+      // throw new Error("Multiple devices connected");
+      for (let i = 0; i < ports.length; i++) {
+        if(ports[i].productId == "6001" && ports[i].vendorId == "0403"){
+          return ports[i];
+        }
+      }
+    }
+    else{
+      return ports[0];
+    }
   }
 
   // this function allows for chaning of parser type and value as needed
