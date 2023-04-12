@@ -1,4 +1,5 @@
 var $ = require( "jquery" );
+import * as rpts from './printout.js';
 function strtobuf(str){
   // might need more
   let buf = Buffer.alloc(0);
@@ -40,6 +41,7 @@ function parseData(caller,data){
       return parseSerialNumber(data);
     case 0b00010:
       // data dump // needs to be stored somewhere, maybe in WBT object? 
+      rpts.createDataDump(data);
       break;
     case 0b00011:
       // data test // t/f
