@@ -148,7 +148,7 @@ class WBTList {
       }
       this.parser._read(); // clear buffer
     }
-    // this.parser.on("data", (data) => {
+    this.parser.on("data", (data) => {
     // //   // console.log(data);
     // //   // for datadump, ignore first byte if consistenly 0 
     // //   // rpts.createDataDump(data.slice(1));
@@ -169,8 +169,8 @@ class WBTList {
     // //   3) move parse back to setup, have parse function call utils, and then parse can act on response
     // //   */
 
-    //   utils.parseData(this,data);
-    // })
+      utils.parseData(this,data);
+    })
   }
 
   standardParse(addr,data){
