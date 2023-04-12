@@ -115,12 +115,13 @@ function parseSelfTest(data){
 }
 
 function parseSerialNumber(data){
-  let str = String.fromCharCode(data[2])
-   + String.fromCharCode(data[3])
-   + String(data[4])
+  // make hex aftr 3rd byte
+  let str = String.fromCharCode(data[3])
+   + String.fromCharCode(data[4])
    + String(data[5])
    + String(data[6])
    + String(data[7])
+   + String(data[8])
   return str;
 }
 
