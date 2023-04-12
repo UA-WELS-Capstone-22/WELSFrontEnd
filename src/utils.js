@@ -36,10 +36,6 @@ function parseData(caller,data){
   while (data.indexOf(i) === 0) {
     i++;
   }
-
-  data.slice(i);
-  console.log(i)
-  console.log(data);
   data = data.slice(i);
   console.log(data);
   switch (cmd) {
