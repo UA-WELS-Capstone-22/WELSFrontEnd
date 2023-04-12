@@ -29,14 +29,12 @@ function decodeAdr(data) {
 }
 
 function parseData(caller,data){
-
-  
   let i = 0
   while (data.indexOf(i) === 0) {
     i++;
   }
   data = data.slice(i);
-  console.log(data);
+  // console.log(data);
   let addr = (data[0] & 0xE0) >> 5;
   let cmd = data[0] & 0x1F;
   switch (cmd) {
@@ -48,9 +46,7 @@ function parseData(caller,data){
       return parseSerialNumber(data);
     case 0b00010:
       // data dump // needs to be stored somewhere, maybe in WBT object? 
-      console.log('data dump log func call below')
       rpts.createDataDump(data);
-      console.log('data dump log func call return')
       break;
     case 0b00011:
       // data test // t/f

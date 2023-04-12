@@ -5,7 +5,7 @@ class WBT {
     constructor(address, firmwareVersion,port) {
       this.WBTAddress = address; // address of WBT
       this.firmwareVersion = firmwareVersion; // firmware version of WBT
-      this.status = "Connected"; // status of WBT
+      this.status = "Idle"; // status of WBT
       this.port = port
       this.SN = ""; // serial number of WBT
       this.WBTData = {}; // array to store data from WBT
@@ -19,6 +19,7 @@ class WBT {
       this.$cmdButton.on("click", () => {
         if (this.$cmdSelect.val() != ""){
           utils.sendCommand(this.port, this.WBTAddress, this.$cmdSelect.val());
+          this.updateStatus(this.$cmdButton.text()); // idk if this works
           // may need update status function call here absed on command
           // createReport(); // need to figure where and when to cal function, may get moved to setup.js
         }
