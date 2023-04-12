@@ -29,8 +29,7 @@ function decodeAdr(data) {
 }
 
 function parseData(caller,data){
-  let addr = (data[0] & 0xE0) >> 5;
-  let cmd = data[0] & 0x1F;
+
   
   let i = 0
   while (data.indexOf(i) === 0) {
@@ -38,6 +37,8 @@ function parseData(caller,data){
   }
   data = data.slice(i);
   console.log(data);
+  let addr = (data[0] & 0xE0) >> 5;
+  let cmd = data[0] & 0x1F;
   switch (cmd) {
     case 0b00000:
       // self test // justs needs to know if pass or fail. t/f works
