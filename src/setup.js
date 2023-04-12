@@ -148,29 +148,29 @@ class WBTList {
       }
       this.parser._read(); // clear buffer
     }
-    this.parser.on("data", (data) => {
-    //   // console.log(data);
-    //   // for datadump, ignore first byte if consistenly 0 
-    //   // rpts.createDataDump(data.slice(1));
-    //   // if(data[0] & 0b11111111 == 0b00010){
-    //   //   console.log('creating log')
-    //   //   rpts.createDataDump(data);
-    //   // }
-    //   // else{
-    //   //   console.log(data);
-    //   // }
-    //   // utils.parseData(data);
+    // this.parser.on("data", (data) => {
+    // //   // console.log(data);
+    // //   // for datadump, ignore first byte if consistenly 0 
+    // //   // rpts.createDataDump(data.slice(1));
+    // //   // if(data[0] & 0b11111111 == 0b00010){
+    // //   //   console.log('creating log')
+    // //   //   rpts.createDataDump(data);
+    // //   // }
+    // //   // else{
+    // //   //   console.log(data);
+    // //   // }
+    // //   // utils.parseData(data);
 
-    //   // 2 options:
+    // //   // 2 options:
 
-    //   /*
-    //   1) call parse function in utils, store response, then call function to act on response
-    //   2) call parse function in utils, pass in wbtList and give utils access to wbtList
-    //   3) move parse back to setup, have parse function call utils, and then parse can act on response
-    //   */
+    // //   /*
+    // //   1) call parse function in utils, store response, then call function to act on response
+    // //   2) call parse function in utils, pass in wbtList and give utils access to wbtList
+    // //   3) move parse back to setup, have parse function call utils, and then parse can act on response
+    // //   */
 
-      utils.parseData(this,data);
-    })
+    //   utils.parseData(this,data);
+    // })
   }
 
   standardParse(addr,data){

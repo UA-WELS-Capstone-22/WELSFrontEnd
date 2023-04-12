@@ -41,7 +41,9 @@ function parseData(caller,data){
       return parseSerialNumber(data);
     case 0b00010:
       // data dump // needs to be stored somewhere, maybe in WBT object? 
-      // rpts.createDataDump(data);
+      console.log('data dump log func call below')
+      rpts.createDataDump(data);
+      console.log('data dump log func call return')
       break;
     case 0b00011:
       // data test // t/f
@@ -71,17 +73,12 @@ function parseData(caller,data){
       // store/ship  // needs to return string to be updated (needs WBTList)
       caller.WBTs[addr-1].updateData(standardParse(data));
       break;
-    case 0b10001:
-      // data dump // needs to be stored somewhere, maybe in WBT object?
-      rpts.createDataDump(data);
-      break;
     case 0b11000:
       // atp complete // generate report & update state to idle?
       break;
     case 0b11001:
       // test complete // generate report & updates state to idle?
       break;
-
     case 0b11111:
       // general error // display error message on screen?
       break;
