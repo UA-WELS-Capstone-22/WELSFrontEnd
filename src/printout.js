@@ -66,13 +66,9 @@ function createReport(){
 }
 
 function createDataDump(data){
-  console.log("starting write")
   const fstrm = fs.createWriteStream(pth +"\\"+utils.parseSerialNumber(data)+'.dat');
-  fstrm.write(data.slice(0));
-  console.log(fstrm)
-  console.log(data.slice(0))
+  fstrm.write(data.slice(1));
   fstrm.end();
-  console.log("finished write")
 }
 
 

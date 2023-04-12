@@ -178,7 +178,25 @@ function addToDOM(Address) {
   $("#WBTContainer").append(wbtHTML);
 }
 
+function noDevicesDetected(obj){
+  const wbtHTML = 
+  `<div id = "noDevices" class = modal">
+    <div class = "modal-content">
+      <p>No Devices Detected. Please check device connection click "Retry" when ready.</p>
+      <button id = "Retry" >Retry</button>
+    </div>
+  </div>
+  `
+  if(document.getElementById("noDevices") == null){
+    document.querySelector("#WBTContainer").insertAdjacentHTML('afterend', wbtHTML);
+  }
+  let btn = document.getElementById("Retry");
+  btn.addEventListener("click", function(){
+    document.getElementById("noDevices").remove();
+    obj.initialize();
+  })
 
+}
 
 
 
@@ -199,5 +217,6 @@ export{
   decodeAdr,
   parseData,
   addToDOM,
-  parseSerialNumber
+  parseSerialNumber,
+  noDevicesDetected
 }

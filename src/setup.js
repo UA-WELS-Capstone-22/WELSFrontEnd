@@ -1,23 +1,17 @@
 // imports
 const { ByteLengthParser,DelimiterParser } = require("serialport");
 const { SerialPort } = eval("require('serialport')");
-const { path } = eval("require('path')");
-const { stat } = require("original-fs");
 const Buffer = require('buffer').Buffer;
 import { WBT } from './WBT.js';
 import * as utils from './utils.js';
 import * as hs from './handshake.js';
-import * as rpts from './printout.js';
 
-// import { serialObj } from './serialObj.js';
 //Serial communication funciton
 //TODO: might not neede to iterate over all ports as only on wbt connects to pc/ get ary/ashton to advise ~ TBD
 //TODO: add error handling ~ not started
-//TODO: add data proceessing function ~ not started
-//TODO: after data is parsed, add to html ~ in progress
-//TODO: creat write function so we are always writing in byte encoding ~ started
-//TODO: after handshake iterate through WBT list and send self test command waiting for response ~ started
-//TODO: update firmware version checking function to integerts to request  ~ not started
+//TODO: add data proceessing function ~ in progress
+//TODO: after data is parsed, add to html ~ in progress - need to test further
+//TODO: after handshake iterate through WBT list and send self test command waiting for response ~ started ~ need to add response handling for failed tests
 //TODO: for test timing store start UTC time and END UTC time when end command Rx'ed then calc for later ~ not started
 
 // WBT class
@@ -35,6 +29,11 @@ class WBTList {
   async initialize() {
     try {
       this.port = await this.getPortAndInitializeSerialPort();
+      if(!this.port){
+        // call function to display no devices detected message with button that on click will call initialize again
+        utils.noDevicesDetected(this)
+        return;
+      }
       // need to test two bang delimiter works
       this.initParser("DelimiterParser", "!!");
       // this.initParser("ByteLengthParser", 1);
@@ -65,10 +64,15 @@ class WBTList {
   async getPortAndInitializeSerialPort() {
     //TODO: add error handling for when no device detected (ie add try catch)
     const port = await this.getPort();
-    return new SerialPort({
-      path: port.path,
-      baudRate: 9600,
-    });
+    if(!port){
+     return null;
+    }
+    else{
+      return new SerialPort({
+        path: port.path,
+        baudRate: 9600,
+      });
+    }
   }
 
   // get list of com ports with device connected
