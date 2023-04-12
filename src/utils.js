@@ -32,9 +32,11 @@ function parseData(caller,data){
   let addr = (data[0] & 0xE0) >> 5;
   let cmd = data[0] & 0x1F;
   console.log(caller);
-  while (data.indexOf(0) === 0) {
-    data.shift()
+  let i = 0
+  while (data.indexOf(i) === 0) {
+    i++;
   }
+  data = data.slice(i);
   switch (cmd) {
     case 0b00000:
       // self test // justs needs to know if pass or fail. t/f works
