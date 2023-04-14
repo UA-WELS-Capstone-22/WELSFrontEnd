@@ -119,7 +119,7 @@ function  selfTest(port,parser,Addr){
           if (response) {
             clearTimeout(timeoutId); // clear timeout if response received
             console.log("Response received for SN: ",data);  // log response received // commented out for testing
-            resolve(data[0]); // returns data // DO NOT COMMENT OUT
+            resolve(utils.parseSerialNumber(data)); // returns data // DO NOT COMMENT OUT
           }
           else{
             // console.log(data);

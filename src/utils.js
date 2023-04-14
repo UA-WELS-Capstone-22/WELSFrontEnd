@@ -31,13 +31,14 @@ function decodeAdr(data) {
 
 function parseData(caller,data){
   let i = 0
+  let addr = ((data[0] & 0xE0) >> 5);
+  let cmd = data[0] & 0x1F;
+  console.log(data);
   while (data.indexOf(i) === 0) {
     i++;
   }
   data = data.slice(i);
-  // console.log(data);
-  let addr = (data[0] & 0xE0) >> 5;
-  let cmd = data[0] & 0x1F;
+
   switch (cmd) {
     case 0b00000:
       // self test // justs needs to know if pass or fail. t/f works
@@ -47,6 +48,7 @@ function parseData(caller,data){
       return parseSerialNumber(data);
     case 0b00010:
       // data dump // needs to be stored somewhere, maybe in WBT object? 
+      console.log('dump hit?', data)
       rpts.createDataDump(data);
       break;
     case 0b00011:
@@ -57,6 +59,7 @@ function parseData(caller,data){
       return true;
     case 0b00100:
       // charge cont.  // needs to return string to be updated (needs WBTList)
+      console.log(addr);
       caller.WBTs[addr-1].updateData(standardParse(data));;
       break;
     case 0b00101:
@@ -129,6 +132,7 @@ function standardParse(data){
     Voltage: data[5], 
     Current: data[6]
   }
+  console.log(updates);
   return updates;
 }
 
@@ -143,6 +147,9 @@ function addToDOM(Address) {
           <h3>Status: </h3>
           <h3 class = 'curStatus'> Connected</h3>
         </div> 
+      </div>
+      <div class = 'WBUSNContainer'>
+        <h3 class = 'WBUSN'>No WBU detected</h3>
       </div>
       <div class = 'controls'>
         <a>Command: </a>

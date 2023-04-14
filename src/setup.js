@@ -35,7 +35,7 @@ class WBTList {
         return;
       }
       // need to test two bang delimiter works
-      this.initParser("DelimiterParser", "!!");
+      this.initParser("DelimiterParser", "EOM!");
       // this.initParser("ByteLengthParser", 1);
 
       this.port.on("open", () => {
@@ -130,7 +130,7 @@ class WBTList {
     // if both are valid, then add WBT to WBTList
     // after r1 and r2 event listeners are removed, to save memory and prevent multiple listeners from being added
     // could add event listnr . data parsr for new device to add message
-    for (let i = 1; i < 2; i++) {
+    for (let i = 1; i < 7; i++) {
       try{ // for instaces where no response is received / all wbt discovered
         let r1 = await hs.assignAddress(this.port,this.parser,(i & 0b111).toString(2).padStart(3,'0'));
         this.parser.removeAllListeners();
@@ -140,10 +140,10 @@ class WBTList {
         this.parser.removeAllListeners();
         let r4 = await hs.getSerialNumber(this.port,this.parser,(i & 0b111).toString(2).padStart(3,'0'))        
         this.parser.removeAllListeners();
-        console.log(r4);
+        // console.log(r4);
         // TODO: implement code below // add r3 once self test is done
         if (r1 && r2 && r3) {
-          this.WBTs.push(new WBT(i, r2, this.port));
+          this.WBTs.push(new WBT(i, r2, this.port, r4));
         }
       }
       catch(error){

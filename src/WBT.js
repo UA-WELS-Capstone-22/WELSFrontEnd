@@ -2,12 +2,12 @@ var $ = require( "jquery" );
 import * as utils from './utils.js';
 import {createReport,createDataDump} from './printout.js';
 class WBT {
-    constructor(address, firmwareVersion,port) {
+    constructor(address, firmwareVersion, port, SerialNum) {
       this.WBTAddress = address; // address of WBT
       this.firmwareVersion = firmwareVersion; // firmware version of WBT
       this.status = "Idle"; // status of WBT
       this.port = port
-      this.SN = ""; // serial number of WBT
+      this.SN = SerialNum; // serial number of WBT
       this.WBTData = {}; // array to store data from WBT
       utils.addToDOM(address); // add WBT to DOM
       let str = ".WBTPanel#"+(Number(address))
@@ -16,11 +16,14 @@ class WBT {
       this.$domdata = this.$domRef.find("div.Data");
       this.$cmdButton = this.$domRef.find("button");
       this.$cmdSelect = this.$domRef.find("select");
+      if(SerialNum != undefined){
+        this.updateSN();
+      }
       this.$cmdButton.on("click", () => {
         if (this.$cmdSelect.val() != ""){
           utils.sendCommand(this.port, this.WBTAddress, this.$cmdSelect.val());
-          console.log("cmd select obj",this.$cmdSelect);
-          // this.updateStatus(this.$cmdSelect); // idk if this works
+          // console.log();
+          this.updateStatus(this.$cmdSelect[0].options[this.$cmdSelect[0].selectedIndex].text); // idk if this works
           // may need update status function call here absed on command
           // createReport(); // need to figure where and when to cal function, may get moved to setup.js
         }
@@ -57,9 +60,11 @@ class WBT {
       this.$domStatus.text(this.status);
     }
 
-    updateSN(SN){
-      this.SN = SN;
-      this.$domRef.find("h3").text("WBT " + this.WBTAddress + " SN: " + this.SN);
+    updateSN(){
+      console.log(this.$domRef.find("h3.WBUSN"));
+      let sts = this.$domRef.find("h3.WBUSN")
+      console.log(sts);
+      sts.text(`WBU SN: ${this.SN}`);
     }
 
     clearData(){
