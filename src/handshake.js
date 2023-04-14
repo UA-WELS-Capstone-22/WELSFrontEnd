@@ -52,6 +52,8 @@ function checkFirmwareVersion(port,parser,firmwareVersion,addr) {
           // console.log('response recieved in fw:',response,'addr:',addr); 
           // console.log('data recieved in fw:',data,'addr:',addr);
           // update later
+          console.log("data rxed in fw:",data,"addr:",addr);
+          console.log("response rxed in fw:",response,"addr:",addr);
           if (response == "1.0") {
             clearTimeout(timeoutId); // clear timeout if response received
             //console.log("Response received for version: ",this.decodeHandshakeResponse(data));  // log response received // commented out for testing
@@ -80,6 +82,7 @@ function  selfTest(port,parser,Addr){
           // console.log("data rxed in self test:",data,"addr:",Addr);
           // remove === 0 for testing
           let response = utils.parseData(this,data);
+          console.log("response rxed in self test:",response,"addr:",Addr);
           if (response.length === 0) {
             clearTimeout(timeoutId); // clear timeout if response received
             console.log("Response received for self test: ",data);  // log response received // commented out for testing
