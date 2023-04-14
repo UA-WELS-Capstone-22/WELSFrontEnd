@@ -50,6 +50,7 @@ class WBTList {
 
       this.port.on("close", () => {
         console.log(`closing port ${this.port.path}`);
+        utils.noDevicesDetected(this)
         // should anythign be done here?
       });
       // might need to add event listener for data recieved to be passed to parsing function could also be in elsewhere

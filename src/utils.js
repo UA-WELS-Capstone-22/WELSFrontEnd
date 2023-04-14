@@ -1,4 +1,5 @@
 var $ = require( "jquery" );
+// import doc from 'pdfkit';
 import * as rpts from './printout.js';
 function strtobuf(str){
   // might need more
@@ -175,6 +176,7 @@ function addToDOM(Address) {
 }
 
 function noDevicesDetected(obj){
+  document.getElementById("WBTContainer").innerHTML = "";
   const wbtHTML = 
   `<div id = "noDevices" class = modal">
     <div class = "modal-content">
