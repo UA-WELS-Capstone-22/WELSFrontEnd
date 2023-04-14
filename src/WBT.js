@@ -19,7 +19,8 @@ class WBT {
       this.$cmdButton.on("click", () => {
         if (this.$cmdSelect.val() != ""){
           utils.sendCommand(this.port, this.WBTAddress, this.$cmdSelect.val());
-          this.updateStatus(this.$cmdSelect.text()); // idk if this works
+          console.log("cmd select obj",this.$cmdSelect);
+          // this.updateStatus(this.$cmdSelect); // idk if this works
           // may need update status function call here absed on command
           // createReport(); // need to figure where and when to cal function, may get moved to setup.js
         }
