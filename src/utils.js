@@ -123,12 +123,19 @@ function parseSerialNumber(data){
   // make hex aftr 3rd byte
   console.log(data)
   console.log(data[3].toString(16))
+  // let str = String.fromCharCode(data[1])
+  //  + String.fromCharCode(data[2])
+  //  + data[3].toString(16)
+  //  + data[4].toString(16)
+  //  + data[5].toString(16)
+  //  + data[6].toString(16)
+
   let str = String.fromCharCode(data[1])
-   + String.fromCharCode(data[2])
-   + data[3].toString(16)
-   + data[4].toString(16)
-   + data[5].toString(16)
-   + data[6].toString(16)
+  + String.fromCharCode(data[2])
+  + String(data[3])
+  + String(data[4])
+  + String(data[5])
+  + String(data[6])
   return str;
 }
 
