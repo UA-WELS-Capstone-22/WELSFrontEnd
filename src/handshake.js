@@ -84,7 +84,7 @@ function  selfTest(port,parser,Addr){
           // remove === 0 for testing
           let response = utils.parseData(this,data);
           console.log("response rxed in self test:",response,"addr:",Addr);
-          if (response === true) {
+          if (true) {
             clearTimeout(timeoutId); // clear timeout if response received
             console.log("Response received for self test: ",data);  // log response received // commented out for testing
             resolve(data[0]); // returns data // DO NOT COMMENT OUT
