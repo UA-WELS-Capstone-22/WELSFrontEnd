@@ -65,8 +65,8 @@ function createReport(){
   doc.end();
 }
 
-function createDataDump(data){
-  const fstrm = fs.createWriteStream(pth +"\\"+utils.parseSerialNumber(data)+'.dat');
+function createDataDump(data,sn){
+  const fstrm = fs.createWriteStream(pth +"\\"+sn+'.dat');
   fstrm.write(data.slice(1));
   fstrm.end();
 }

@@ -45,7 +45,7 @@ class WBTList {
 
       this.parser.on("data", (data) => {
         console.log("data recieved");
-        utils.parseData(this,data);
+        // utils.parseData(this,data);
       });
 
       this.port.on("close", () => {

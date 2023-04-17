@@ -6,7 +6,7 @@ function strtobuf(str){
   let buf = Buffer.alloc(0);
   buf = Buffer.alloc(1);
   buf.writeUInt8(parseInt(str,2));
-  // console.log("buf:",buf)
+  console.log("buf:",buf)
   return buf
 }
 
@@ -49,7 +49,7 @@ function parseData(caller,data){
     case 0b00010:
       // data dump // needs to be stored somewhere, maybe in WBT object? 
       console.log('dump hit?', data)
-      rpts.createDataDump(data);
+      rpts.createDataDump(data,caller.WBTs[addr-1].SN);
       break;
     case 0b00011:
       // data test // t/f
@@ -145,10 +145,10 @@ function parseSerialNumber(data,caller){
 
 function standardParse(data){
   let updates = {
-    WBU_temp:(data[1] << 8 | data[2]), 
+    WBU_temp: (((data[1] << 8 | data[2]) / 2)-55), 
     WBT_temp:(data[3] << 8 | data[4]), 
-    Voltage: data[5], 
-    Current: data[6]
+    Voltage: (data[5] * 0.064) + 2.88, 
+    Current: Math.abs((((data[6] << 8 | data[7]) - 512) / 25.6))
   }
   console.log(updates);
   return updates;
