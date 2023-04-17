@@ -33,7 +33,7 @@ function parseData(caller,data){
   let i = 0
   let addr = ((data[0] & 0xE0) >> 5);
   let cmd = data[0] & 0x1F;
-  console.log(data);
+  console.log(data,address,cmd);
   while (data.indexOf(i) === 0) {
     i++;
   }
