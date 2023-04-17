@@ -45,7 +45,7 @@ function parseData(caller,data){
       return parseSelfTest(data[1]);
     case 0b00001:
       //Serial number // needs to return string to be updated (needs WBTList)
-      return parseSerialNumber(data);
+      return parseSerialNumber(data,"parseFunc");
     case 0b00010:
       // data dump // needs to be stored somewhere, maybe in WBT object? 
       console.log('dump hit?', data)
@@ -119,9 +119,9 @@ function parseSelfTest(data){
   }
 }
 
-function parseSerialNumber(data){
+function parseSerialNumber(data,caller){
   // make hex aftr 3rd byte
-  console.log(this)
+  console.log(caller)
   console.log(data)
   console.log(data[3].toString(16))
   let str = String.fromCharCode(data[1])
