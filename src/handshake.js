@@ -61,6 +61,7 @@ function checkFirmwareVersion(port,parser,firmwareVersion,addr) {
           }
           else{
             //console.log("did not match in 241")
+            console.log(response);
             reject(new Error("Invalid response from WBT" + addr.toString()+ " in FW")); // reject promise if firmware version received is not compatible with firmware version sent 
             // TODO: evaluate above reject if should be different ie sending an error message to user instead of data
           }
@@ -83,7 +84,7 @@ function  selfTest(port,parser,Addr){
           // remove === 0 for testing
           let response = utils.parseData(this,data);
           console.log("response rxed in self test:",response,"addr:",Addr);
-          if (response.length === 0) {
+          if (response === true) {
             clearTimeout(timeoutId); // clear timeout if response received
             console.log("Response received for self test: ",data);  // log response received // commented out for testing
             resolve(data[0]); // returns data // DO NOT COMMENT OUT

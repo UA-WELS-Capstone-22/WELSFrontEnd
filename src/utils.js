@@ -99,29 +99,34 @@ function parseData(caller,data){
 
 function parseSelfTest(data){
   let errors = [];
-  if(data & 1 == 0){
+  if((data & 0b1) == 0){
     errors.push("Charge test did not pass")
   }
-  if(data & 2 == 0){
+  if((data & 0b10) == 0){
     errors.push("WBT temperature is out of operational range")
   }
-  if(data & 4 == 0){
+  if((data & 0b100) == 0){
     errors.push("WBU NVM test failed")
   }
-  if(data & 8 == 0){
+  if((data & 0b1000) == 0){
     errors.push("WBU temperature is out of operational range")
   }
-  return errors;
+  if(errors == [] && data == 15){
+    return true;
+  }
+  else{
+    return errors;
+  }
 }
 
 function parseSerialNumber(data){
   // make hex aftr 3rd byte
-  let str = String.fromCharCode(data[3])
-   + String.fromCharCode(data[4])
-   + String(data[5])
-   + String(data[6])
-   + String(data[7])
-   + String(data[8])
+  let str = String.fromCharCode(data[1])
+   + String.fromCharCode(data[2])
+   + data[3].toString(16)
+   + data[4].toString(16)
+   + data[5].toString(16)
+   + data[6].toString(16)
   return str;
 }
 
@@ -156,7 +161,10 @@ function addToDOM(Address) {
         <select command = 'commandSelect'>
           <option value = ''></option>
           <option value = '00001'>Full ATP</option>
-          <option value = '00010'>Charge</option> 
+          <option value = '00010'>Charge</option>
+          <option value = '00011'>Impedence</option>
+          <option value = '00100'>Trip test</option>
+          <option value = '00101'>Hold test</option> 
           <option value = '00110'>Discharge</option>
           <option value = '00111'>Storage/Shipping</option>
           <option value = '10001'>Data Dump</option>
