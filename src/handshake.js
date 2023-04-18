@@ -40,7 +40,7 @@ function checkFirmwareVersion(port,parser,firmwareVersion,addr) {
         // event listener for data received from serial port
         parser.on("data", (data) => {    
           let i = 0 // index for data
-          while(data.indexOf(i) === 0){
+          while(data.indexOf(i) == 0){
             i++;
           }
           data = data.slice(i); // remove address from data
