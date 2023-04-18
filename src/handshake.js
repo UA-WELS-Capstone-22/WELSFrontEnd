@@ -1,5 +1,5 @@
 import * as utils from './utils.js';
-import * as ers from './Errors.js';
+import * as ers from './Error.js';
 function assignAddress(port,parser,Addr) {
     // Promise to send address and wait for response / timeout if failed
     return new Promise((resolve, reject) => {
