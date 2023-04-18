@@ -1,12 +1,11 @@
 var $ = require( "jquery" );
-// import doc from 'pdfkit';
 import * as rpts from './printout.js';
 function strtobuf(str){
   // might need more
   let buf = Buffer.alloc(0);
   buf = Buffer.alloc(1);
   buf.writeUInt8(parseInt(str,2));
-  console.log("buf:",buf)
+  console.log("buf:",buf) // leaving in for now
   return buf
 }
 
@@ -121,9 +120,6 @@ function parseSelfTest(data){
 
 function parseSerialNumber(data,caller){
   // make hex aftr 3rd byte
-  console.log(caller)
-  console.log(data)
-  console.log(data[3].toString(16))
   let str = String.fromCharCode(data[1])
    + String.fromCharCode(data[2])
    let x1 = data[3].toString(16)
@@ -131,15 +127,6 @@ function parseSerialNumber(data,caller){
    let x3 = data[5].toString(16)
    let x4 = data[6].toString(16)
   str += x1 + x2 + x3 + x4
-  console.log(str)
-  console.log(x1)
-  console.log(typeof(x1))
-  // let str = String.fromCharCode(data[1])
-  // + String.fromCharCode(data[2])
-  // + String(data[3])
-  // + String(data[4])
-  // + String(data[5])
-  // + String(data[6])
   return str;
 }
 
@@ -150,7 +137,6 @@ function standardParse(data){
     Voltage: (data[5] * 0.064) + 2.88, 
     Current: Math.abs((((data[6] << 8 | data[7]) - 512) / 25.6))
   }
-  console.log(updates);
   return updates;
 }
 
@@ -223,17 +209,6 @@ function noDevicesDetected(obj){
   })
 
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 export{ 

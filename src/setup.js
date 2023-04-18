@@ -6,9 +6,7 @@ import { WBT } from './WBT.js';
 import * as utils from './utils.js';
 import * as hs from './handshake.js';
 
-//Serial communication funciton
-//TODO: might not neede to iterate over all ports as only on wbt connects to pc/ get ary/ashton to advise ~ TBD
-//TODO: add error handling ~ not started
+//TODO: add error handling ~ started, lots more to do
 //TODO: add data proceessing function ~ in progress
 //TODO: after data is parsed, add to html ~ in progress - need to test further
 //TODO: after handshake iterate through WBT list and send self test command waiting for response ~ started ~ need to add response handling for failed tests
@@ -126,14 +124,28 @@ class WBTList {
     await new Promise((resolve) => setTimeout(resolve, 5000));
     // for loop to run up to 6 times as max supported WBTs is 6
     // r1 is the address response
-    // r2 is the version response
-    // if both are valid, then add WBT to WBTList
-    // after r1 and r2 event listeners are removed, to save memory and prevent multiple listeners from being added
-    // could add event listnr . data parsr for new device to add message
-    for (let i = 1; i < 2; i++) {
+    // r2 is the version response 
+    // r3 is the self test response
+    // r4 gets the Serial number
+    // if all valid, then add WBT to WBTList
+    // after each 'r' event listeners are removed, to save memory and prevent multiple listeners from being added
+    let flag = true
+    let i = 1
+    while(flag){
+      if( i > 6){
+        // call function to display too many device connected
+        return;
+      }
       try{ // for instaces where no response is received / all wbt discovered
-        let r1 = await hs.assignAddress(this.port,this.parser,(i & 0b111).toString(2).padStart(3,'0'));
+        var r1 = await hs.assignAddress(this.port,this.parser,(i & 0b111).toString(2).padStart(3,'0'));
         this.parser.removeAllListeners();
+      }
+      catch(error){
+        console.error(error);
+        flag = false;
+        return;
+      }
+      try{
         let r2 = await hs.checkFirmwareVersion(this.port,this.parser,this.version,(i & 0b111).toString(2).padStart(3,'0'));
         this.parser.removeAllListeners();
         let r3 = await hs.selfTest(this.port,this.parser,(i & 0b111).toString(2).padStart(3,'0'))
@@ -141,9 +153,9 @@ class WBTList {
         let r4 = await hs.getSerialNumber(this.port,this.parser,(i & 0b111).toString(2).padStart(3,'0'))        
         this.parser.removeAllListeners();
         // console.log(r4);
-        // TODO: implement code below // add r3 once self test is done
         if (r1 && r2 && r3) {
           this.WBTs.push(new WBT(i, r2, this.port, r4));
+          i++;
         }
       }
       catch(error){
@@ -154,18 +166,6 @@ class WBTList {
       this.parser._read(); // clear buffer
     }
     this.parser.on("data", (data) => {
-    // //   // console.log(data);
-    // //   // for datadump, ignore first byte if consistenly 0 
-    // //   // rpts.createDataDump(data.slice(1));
-    // //   // if(data[0] & 0b11111111 == 0b00010){
-    // //   //   console.log('creating log')
-    // //   //   rpts.createDataDump(data);
-    // //   // }
-    // //   // else{
-    // //   //   console.log(data);
-    // //   // }
-    // //   // utils.parseData(data);
-
     // //   // 2 options:
 
     // //   /*
