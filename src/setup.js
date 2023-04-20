@@ -6,6 +6,7 @@ import { WBT } from './WBT.js';
 import * as utils from './utils.js';
 import * as hs from './handshake.js';
 
+
 //TODO: add error handling ~ started, lots more to do
 //TODO: add data proceessing function ~ in progress
 //TODO: after data is parsed, add to html ~ in progress - need to test further
@@ -69,7 +70,7 @@ class WBTList {
     else{
       return new SerialPort({
         path: port.path,
-        baudRate: 9600,
+      baudRate: 38400,
       });
     }
   }
@@ -129,23 +130,10 @@ class WBTList {
     // r4 gets the Serial number
     // if all valid, then add WBT to WBTList
     // after each 'r' event listeners are removed, to save memory and prevent multiple listeners from being added
-    let flag = true
-    let i = 1
-    while(flag){
-      if( i > 6){
-        // call function to display too many device connected
-        return;
-      }
+    for (let i = 1; i < 2; i++) {
       try{ // for instaces where no response is received / all wbt discovered
         var r1 = await hs.assignAddress(this.port,this.parser,(i & 0b111).toString(2).padStart(3,'0'));
         this.parser.removeAllListeners();
-      }
-      catch(error){
-        console.error(error);
-        flag = false;
-        return;
-      }
-      try{
         let r2 = await hs.checkFirmwareVersion(this.port,this.parser,this.version,(i & 0b111).toString(2).padStart(3,'0'));
         this.parser.removeAllListeners();
         let r3 = await hs.selfTest(this.port,this.parser,(i & 0b111).toString(2).padStart(3,'0'))
@@ -155,7 +143,6 @@ class WBTList {
         // console.log(r4);
         if (r1 && r2 && r3) {
           this.WBTs.push(new WBT(i, r2, this.port, r4));
-          i++;
         }
       }
       catch(error){

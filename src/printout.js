@@ -56,11 +56,23 @@ var pth = ''
 let closeFileSelect = document.getElementsByClassName('close')[0];
 closeFileSelect.addEventListener('click',updateCss);
 
-function createReport(){
+function createReport(Test,SN){
   // more todo but waiting for data
   const doc = new PDFDocument();
   doc.fontSize(25).text('Hello World!', 100, 100);
-  const writeStream = fs.createWriteStream(pth + '/test.pdf');
+  // stores current date and time in MMDDYYYY_HHMMSS format
+  let date = new Date();
+  let month = date.getMonth() + 1;
+  if(month < 10) month = '0' + month.toString();
+  let day = date.getDate();
+  let year = date.getFullYear();
+  let hour = date.getHours();
+  let minute = date.getMinutes();
+  let second = date.getSeconds();
+  let dateStr = day.toString() + month + year.toString() + '_' + hour + minute + second;
+
+  let adrStr = pth + '/' + Test + '_' + SN + '_' + dateStr +'.pdf'
+  const writeStream = fs.createWriteStream(adrStr);
   doc.pipe(writeStream);
   doc.end();
 }

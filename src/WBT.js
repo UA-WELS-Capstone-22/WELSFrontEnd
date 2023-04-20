@@ -25,7 +25,7 @@ class WBT {
           // console.log();
           this.updateStatus(this.$cmdSelect[0].options[this.$cmdSelect[0].selectedIndex].text); // idk if this works
           // may need update status function call here absed on command
-          // createReport(); // need to figure where and when to cal function, may get moved to setup.js
+          // createReport(this.$cmdSelect[0].options[this.$cmdSelect[0].selectedIndex].text,this.SN); // need to figure where and when to cal function, may get moved to setup.js
         }
       });
       
