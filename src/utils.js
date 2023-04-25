@@ -29,15 +29,14 @@ function decodeAdr(data) {
 }
 
 function parseData(caller,data){
-  let i = 0
-  let addr = ((data[0] & 0xE0) >> 5);
-  let cmd = data[0] & 0x1F;
-  console.log(data,addr,cmd);
+  let i = 0;
   while (data.indexOf(i) === 0) {
     i++;
   }
   data = data.slice(i);
-
+  let addr = ((data[0] & 0xE0) >> 5);
+  let cmd = data[0] & 0x1F;
+  console.log(data,addr,cmd);
   switch (cmd) {
     case 0b00000:
       // self test // justs needs to know if pass or fail. t/f works
@@ -63,9 +62,11 @@ function parseData(caller,data){
       break;
     case 0b00101:
       // impedance  // returns impedance
+      caller.WBTs[addr-1].updateData(ImpedanceParse(data));
       break;
     case 0b00110:
       // trip test // returns time
+      caller.WBTs[addr-1].updateData(tripTestParse(data)); 
       break;
     case 0b00111:
       // hold test  // needs to return string to be updated (needs WBTList)
@@ -81,9 +82,12 @@ function parseData(caller,data){
       break;
     case 0b11000:
       // atp complete // generate report & update state to idle?
+      caller.WBTs[addr-1].clearData();
+      caller.WBTs[addr-1].updateState("idle"); // maybe add test complete state?
       break;
     case 0b11001:
       // test complete // generate report & updates state to idle?
+      caller.WBTs[addr-1].clearData();
       break;
     case 0b11111:
       // general error // display error message on screen?
@@ -139,7 +143,8 @@ function standardParse(data, port){
   }
   let flag = false;
   if(port != undefined){
-    if(updates.WBU_temp > 35 || updates.WBU_temp < 15 ){ // need calculation for if  temp delta is 2
+    // TODO: Implement function to check for 2 deg C delta in last 10 seconds
+    if(updates.WBU_temp > 35 || updates.WBU_temp < 15 ){ 
       flag = true;
     }
     if(updates.Current > 4.0 || updates.Current < 0.25){
@@ -148,17 +153,28 @@ function standardParse(data, port){
     if(updates.Voltage > 8.2 || updates.Voltage < 5.0){
       flag = true;
     }
-    // need wbt current
+    
   }
-  if(flag){ // needs verification
+  if(flag){ 
     port.write(strtobuf((data[0] >> 5).toString() + "11111")) // will send shutdown command if flag true in block above
   }
   
 
-  if(!flag){
+  return updates;
+}
 
+function tripTestParse(data){
+  updates = {
+    TripTestTime: data[1]
   }
+  return updates;
+}
 
+function ImpedanceParse(data){
+  // confirm conversion
+  updates = {
+    Impedance: data[1] << 1
+  }
   return updates;
 }
 
