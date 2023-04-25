@@ -91,6 +91,7 @@ function parseData(caller,data){
       break;
     case 0b11111:
       // general error // display error message on screen?
+      // need to create display error functionality that can display errors on screen to technitian.
       break;
     default:
       //

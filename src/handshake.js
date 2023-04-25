@@ -46,15 +46,15 @@ function checkFirmwareVersion(port,parser,firmwareVersion,addr) {
           data = data.slice(i); // remove address from data
           // evaluate if firmware version received is compatible with firmware version sent
           let response = utils.decodeHandshakeResponse(data);
-          console.log("data rxed in fw:",data,"addr:",addr);
-          console.log("response rxed in fw:",response,"addr:",addr);
+          // console.log("data rxed in fw:",data,"addr:",addr);
+          // console.log("response rxed in fw:",response,"addr:",addr);
           if (response == "1.0") {
             clearTimeout(timeoutId); // clear timeout if response received
             //console.log("Response received for version: ",this.decodeHandshakeResponse(data));  // log response received // commented out for testing
             resolve(response); // returns data // DO NOT COMMENT OUT
           }
           else{
-            console.log(response);
+            // console.log(response);
             reject(new Error("Invalid response from WBT" + addr.toString()+ " in FW")); // reject promise if firmware version received is not compatible with firmware version sent 
             // TODO: evaluate above reject if should be different ie sending an error message to user instead of data
           }
@@ -76,15 +76,15 @@ function  selfTest(port,parser,Addr){
           // console.log("data rxed in self test:",data,"addr:",Addr);
           // remove === 0 for testing
           let response = utils.parseData(this,data);
-          console.log("response rxed in self test:",response,"addr:",Addr);
+          // console.log("response rxed in self test:",response,"addr:",Addr);
           if (true) {
             clearTimeout(timeoutId); // clear timeout if response received
             // console.log("Response received for self test: ",data);  // log response received // commented out for testing
             resolve(data[0]); // returns data // DO NOT COMMENT OUT
           }
           else{
-            console.log(data);
-            console.log(response)
+            // console.log(data);
+            // console.log(response)
             // for(let msg in response){
             //   // console.log(msg);
             // }
@@ -109,12 +109,12 @@ function  selfTest(port,parser,Addr){
           let response = data;
           if (response) {
             clearTimeout(timeoutId); // clear timeout if response received
-            console.log("Response received for SN: ",data);  // log response received // commented out for testing
+            // console.log("Response received for SN: ",data);  // log response received // commented out for testing
             resolve(utils.parseSerialNumber(data,"hsFunc")); // returns data // DO NOT COMMENT OUT
           }
           else{
             for(let msg in data){
-              console.log(msg);
+              // console.log(msg);
             }
              reject(data); // reject promise if self test did not pass
             // TODO: evaluate above reject if should be different ie sending an error message to user instead of data
