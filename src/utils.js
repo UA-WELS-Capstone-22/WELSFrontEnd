@@ -52,10 +52,10 @@ function parseData(caller,data){
     case 0b00011:
       // data test // t/f
       if(data[1] == 0){
-        caller.WBTs[addr-1].WBTData.set("Data_Test", false);
+        caller.WBTs[addr-1].WBTData["Data_Test"] =  false;
         return false;
       }
-      caller.WBTs[addr-1].WBTData.set("Data_Test", true);
+      caller.WBTs[addr-1].WBTData["Data_Test"] =  true;
       return true;
     case 0b00100:
       // charge cont.  // needs to return string to be updated (needs WBTList)
