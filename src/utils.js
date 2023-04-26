@@ -71,7 +71,7 @@ function parseData(caller,data){
       caller.WBTs[addr-1].updateData(impd);
       console.log(caller.WBTs[addr-1]);
       console.log(caller.WBTs[addr-1].WBTData);
-      caller.WBTs[addr-1].WBTData.set("Impedance",impd["Impedance"]);
+      caller.WBTs[addr-1].WBTData["Impedance"] = impd["Impedance"];
       break;
     case 0b00110:
       // trip test // returns time
