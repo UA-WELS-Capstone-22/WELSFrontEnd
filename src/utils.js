@@ -41,7 +41,7 @@ function parseData(caller,data){
     case 0b00000:
       // self test // justs needs to know if pass or fail. t/f works
       let st = parseSelfTest(data[1])
-      caller.WBTs[addr-1].WBTData["Self_Test"] = st;
+      caller.WBTs[addr-1].WBTData.set("Self_Test", st);
       return st;
     case 0b00001:
       //Serial number // needs to return string to be updated (needs WBTList)
@@ -54,10 +54,10 @@ function parseData(caller,data){
     case 0b00011:
       // data test // t/f
       if(data[1] == 0){
-        caller.WBTs[addr-1].WBTData["Data_Test"] = false;
+        caller.WBTs[addr-1].WBTData.set("Data_Test", false);
         return false;
       }
-      caller.WBTs[addr-1].WBTData["Data_Test"] = true;
+      caller.WBTs[addr-1].WBTData.set("Data_Test", true);
       return true;
     case 0b00100:
       // charge cont.  // needs to return string to be updated (needs WBTList)
@@ -68,7 +68,7 @@ function parseData(caller,data){
       // impedance  // returns impedance
       let impd = ImpedanceParse(data)
       caller.WBTs[addr-1].updateData(impd);
-      caller.WBTs[addr-1].WBTData["Impedance"] = impd["Impedance"];
+      caller.WBTs[addr-1].WBTData.set("Impedance",impd["Impedance"]);
       break;
     case 0b00110:
       // trip test // returns time
