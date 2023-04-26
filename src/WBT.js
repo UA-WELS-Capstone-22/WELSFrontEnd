@@ -8,7 +8,8 @@ class WBT {
       this.status = "Idle"; // status of WBT
       this.port = port
       this.SN = SerialNum; // serial number of WBT
-      this.WBTData = {}; // array to store data from WBT
+      this.tempArray = []; // array to store temperature data from WBT
+      this.WBTData = {}; // array to store data from WBT // will store data from various tests
       utils.addToDOM(address); // add WBT to DOM
       let str = ".WBTPanel#"+(Number(address))
       this.$domRef = $(str);
@@ -71,6 +72,50 @@ class WBT {
       this.$domdata.empty();
     }
 
+    checkWBUTemp(data){
+      // WBUtemp is array of toupls [(temp,time1),(temp,time2),...]
+      // maintains last 2 seconds of data 
+      // if temp delta is greater than 2 deg C, return true
+      // else return false
+      let CurTemp = data[0];
+      let CurTime = data[1];
+
+      if(this.tempArray.length == 0){
+        this.tempArray.push([CurTemp,CurTime]);
+        return false;
+      }
+      // else if(this.tempArray.length == 1){ // might need to add time check/alt behavior here 
+      //   let tempDelta = Math.abs(this.tempArray[0][0] - CurTemp);
+      //   let timeDelta = Math.abs(this.tempArray[0][1] - CurTime);
+      //   if(tempDelta > 2 || timeDelta > 10){
+      //     this.tempArray[0] = [CurTemp,CurTime];
+      //     return true;
+      //   }
+      //   else{
+      //     this.tempArray.push([CurTemp,CurTime]);
+      //     return false;
+      //   }
+      // }
+      else{ 
+        let timeDelta = Math.abs(this.tempArray[0][1] - CurTime);
+        while(timeDelta > 10){ // may have issues with this
+          this.tempArray.shift();
+          timeDelta = Math.abs(this.tempArray[0][1] - CurTime);
+        }
+        let tempDelta = Math.abs(this.tempArray[0][0] - CurTemp);
+        if(tempDelta > 2 && timeDelta < 10){
+          this.tempArray[0] = [CurTemp,CurTime]; // may need to change this 
+          return true;
+        }
+        else{
+          this.tempArray.push([CurTemp,CurTime]);
+          this.tempArray.shift();
+          return false;
+        }
+      }
+      
+      
+    }
 
 
   

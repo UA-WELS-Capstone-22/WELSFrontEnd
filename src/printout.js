@@ -56,7 +56,7 @@ var pth = ''
 let closeFileSelect = document.getElementsByClassName('close')[0];
 closeFileSelect.addEventListener('click',updateCss);
 
-function createReport(Test,SN){
+function createReport(Test,SN,data){
   // more todo but waiting for data
   const doc = new PDFDocument();
   doc.fontSize(25).text('Hello World!', 100, 100);
@@ -74,6 +74,11 @@ function createReport(Test,SN){
   let adrStr = pth + '/' + Test + '_' + SN + '_' + dateStr +'.pdf'
   const writeStream = fs.createWriteStream(adrStr);
   doc.pipe(writeStream);
+  writeStream.write("WBU Test Report")
+  writeStream.write("WBU SN: " + SN)
+  writeStream.write("Test Date: " + date.toShortFormat())
+  writeStream.write("Test Type: " + data["test"])
+  writeStream.write("Test results: " + data["result"])
   doc.end();
 }
 

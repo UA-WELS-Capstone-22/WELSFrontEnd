@@ -40,7 +40,9 @@ function parseData(caller,data){
   switch (cmd) {
     case 0b00000:
       // self test // justs needs to know if pass or fail. t/f works
-      return parseSelfTest(data[1]);
+      let st = parseSelfTest(data[1])
+      caller.WBTs[addr-1].WBTData["Self_Test"] = st;
+      return st;
     case 0b00001:
       //Serial number // needs to return string to be updated (needs WBTList)
       return parseSerialNumber(data,"parseFunc");
@@ -52,8 +54,10 @@ function parseData(caller,data){
     case 0b00011:
       // data test // t/f
       if(data[1] == 0){
+        caller.WBTs[addr-1].WBTData["Data_Test"] = false;
         return false;
       }
+      caller.WBTs[addr-1].WBTData["Data_Test"] = true;
       return true;
     case 0b00100:
       // charge cont.  // needs to return string to be updated (needs WBTList)
@@ -62,11 +66,15 @@ function parseData(caller,data){
       break;
     case 0b00101:
       // impedance  // returns impedance
-      caller.WBTs[addr-1].updateData(ImpedanceParse(data));
+      let impd = ImpedanceParse(data)
+      caller.WBTs[addr-1].updateData(impd);
+      caller.WBTs[addr-1].WBTData["Impedance"] = impd["Impedance"];
       break;
     case 0b00110:
       // trip test // returns time
-      caller.WBTs[addr-1].updateData(tripTestParse(data)); 
+      let ttest = tripTestParse(data)
+      caller.WBTs[addr-1].updateData(ttest); 
+      caller.WBTs[addr-1].WBTData["Trip_Test_Time"] = ttest["Trip_Test_Time"]
       break;
     case 0b00111:
       // hold test  // needs to return string to be updated (needs WBTList)
@@ -165,15 +173,15 @@ function standardParse(data, port){
 }
 
 function tripTestParse(data){
-  updates = {
-    TripTestTime: data[1]
+  let updates = {
+    Trip_Test_Time: data[1]
   }
   return updates;
 }
 
 function ImpedanceParse(data){
   // confirm conversion
-  updates = {
+  let updates = {
     Impedance: data[1] << 1
   }
   return updates;
