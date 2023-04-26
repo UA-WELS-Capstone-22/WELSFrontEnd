@@ -2,19 +2,20 @@ var $ = require( "jquery" );
 import * as utils from './utils.js';
 import {createReport,createDataDump} from './printout.js';
 class WBT {
-    constructor(address, firmwareVersion, port, SerialNum) {
+    constructor(address, firmwareVersion, selfTestRestult, port, SerialNum) {
       this.WBTAddress = address; // address of WBT
       this.firmwareVersion = firmwareVersion; // firmware version of WBT
       this.status = "Idle"; // status of WBT
       this.port = port
       this.SN = SerialNum; // serial number of WBT
       this.tempArray = []; // array to store temperature data from WBT
-      this.WBTData = {}; // array to store data from WBT // will store data from various tests
+      this.WBTData = {"Self_Test_Result": selfTestRestult }; // array to store data from WBT // will store data from various tests
       utils.addToDOM(address); // add WBT to DOM
       let str = ".WBTPanel#"+(Number(address))
       this.$domRef = $(str);
       this.$domStatus = this.$domRef.find("h3.curStatus");
       this.$domdata = this.$domRef.find("div.Data");
+      this.$domDataHeader = this.$domRef.find("div.WBTDataConsts");
       this.$cmdButton = this.$domRef.find("button");
       this.$cmdSelect = this.$domRef.find("select");
       if(SerialNum != undefined){
@@ -24,7 +25,7 @@ class WBT {
         if (this.$cmdSelect.val() != ""){
           utils.sendCommand(this.port, this.WBTAddress, this.$cmdSelect.val());
           // console.log();
-          this.updateStatus(this.$cmdSelect[0].options[this.$cmdSelect[0].selectedIndex].text); // idk if this works
+          // this.updateStatus(this.$cmdSelect[0].options[this.$cmdSelect[0].selectedIndex].text); // idk if this works
           // may need update status function call here absed on command
           // createReport(this.$cmdSelect[0].options[this.$cmdSelect[0].selectedIndex].text,this.SN); // need to figure where and when to cal function, may get moved to setup.js
         }
@@ -56,6 +57,27 @@ class WBT {
       }
     }
     
+    updateConsts(consts){
+      for(let key in consts){
+        let qry = "#"+key
+        let dataItem = this.$domDataHeader.find(qry)
+        if(dataItem.length == 0){
+          this.$domDataHeader.append(
+            `
+            <p class = 'dataItem' id = '${key}'> ${key} : ${consts[key]} </p>
+            `
+          )
+        }
+        else{
+          dataItem.text(
+            `
+            ${key} : ${consts[key]} 
+            `
+          )
+        }
+      }
+    }
+
     updateStatus(status){
       this.status = status;
       this.$domStatus.text(this.status);

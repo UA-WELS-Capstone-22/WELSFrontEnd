@@ -47,7 +47,7 @@ function checkFirmwareVersion(port,parser,firmwareVersion,addr) {
           // evaluate if firmware version received is compatible with firmware version sent
           let response = utils.decodeHandshakeResponse(data);
           // console.log("data rxed in fw:",data,"addr:",addr);
-          // console.log("response rxed in fw:",response,"addr:",addr);
+          console.log("response rxed in fw:",response,"addr:",addr);
           if (response == "1.0") {
             clearTimeout(timeoutId); // clear timeout if response received
             //console.log("Response received for version: ",this.decodeHandshakeResponse(data));  // log response received // commented out for testing
@@ -76,11 +76,11 @@ function  selfTest(port,parser,Addr){
           // console.log("data rxed in self test:",data,"addr:",Addr);
           // remove === 0 for testing
           let response = utils.parseData(this,data);
-          // console.log("response rxed in self test:",response,"addr:",Addr);
-          if (true) {
+          console.log("response rxed in self test:",response,"addr:",Addr);
+          if (response === true) {
             clearTimeout(timeoutId); // clear timeout if response received
             // console.log("Response received for self test: ",data);  // log response received // commented out for testing
-            resolve(data[0]); // returns data // DO NOT COMMENT OUT
+            resolve(data[1]); // returns data // DO NOT COMMENT OUT
           }
           else{
             // console.log(data);

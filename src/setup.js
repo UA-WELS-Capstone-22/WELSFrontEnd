@@ -140,9 +140,8 @@ class WBTList {
         this.parser.removeAllListeners();
         let r4 = await hs.getSerialNumber(this.port,this.parser,(i & 0b111).toString(2).padStart(3,'0'))        
         this.parser.removeAllListeners();
-        // console.log(r4);
         if (r1 && r2 && r3) {
-          this.WBTs.push(new WBT(i, r2, this.port, r4));
+          this.WBTs.push(new WBT(i, r2, r3, this.port, r4));
         }
       }
       catch(error){

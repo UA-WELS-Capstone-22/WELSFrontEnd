@@ -47,7 +47,6 @@ function parseData(caller,data){
       return parseSerialNumber(data,"parseFunc");
     case 0b00010:
       // data dump // needs to be stored somewhere, maybe in WBT object? 
-      console.log('dump hit?', data)
       rpts.createDataDump(data,caller.WBTs[addr-1].SN);
       break;
     case 0b00011:
@@ -58,25 +57,28 @@ function parseData(caller,data){
       }
       caller.WBTs[addr-1].WBTData["Data_Test"] =  true;
       return true;
+
     case 0b00100:
       // charge cont.  // needs to return string to be updated (needs WBTList)
       caller.WBTs[addr-1].updateStatus("Charging");
       console.log(addr);
       caller.WBTs[addr-1].updateData(standardParse(data));;
       break;
+
     case 0b00101:
       // impedance  // returns impedance
       caller.WBTs[addr-1].updateStatus("Impedence Test");
       let impd = ImpedanceParse(data)
       console.log(impd);
-      caller.WBTs[addr-1].updateData(impd);
+      caller.WBTs[addr-1].updateConsts(impd);
       caller.WBTs[addr-1].WBTData["Impedance"] = impd["Impedance"];
       break;
+
     case 0b00110:
       // trip test // returns time
       caller.WBTs[addr-1].updateStatus("Trip Test");
       let ttest = tripTestParse(data)
-      caller.WBTs[addr-1].updateData(ttest); 
+      caller.WBTs[addr-1].updateConsts(ttest); 
       caller.WBTs[addr-1].WBTData["Trip_Test_Time"] = ttest["Trip_Test_Time"];
       break;
     case 0b00111:
@@ -98,6 +100,7 @@ function parseData(caller,data){
       // atp complete // generate report & update state to idle?
       caller.WBTs[addr-1].clearData();
       caller.WBTs[addr-1].updateStatus("Idle"); // maybe add test complete state?
+      rpts.createReport("FULL_ATP",caller.WBTs[addr-1].SN,caller.WBTs[addr-1].WBTData)
       break;
     case 0b11001:
       // test complete // generate report & updates state to idle?
@@ -129,7 +132,7 @@ function parseSelfTest(data){
   if((data & 0b1000) == 0){
     errors.push("WBU temperature is out of operational range")
   }
-  if(errors == [] && data == 15){
+  if(errors.length == 0 && data == 15){
     return true;
   }
   else{
@@ -230,6 +233,8 @@ function addToDOM(Address) {
     <div class = 'WBTContent'>
       <div class = 'WBTDataContentHeader'>
         <h3>WBT Data</h3>
+        <div class = 'WBTDataConsts'>
+        </div>
       </div>
       <div class = 'WBTDataContent'>
         <div class = 'Data'>
