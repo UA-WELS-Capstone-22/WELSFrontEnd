@@ -69,15 +69,13 @@ function parseData(caller,data){
       let impd = ImpedanceParse(data)
       console.log(impd);
       caller.WBTs[addr-1].updateData(impd);
-      console.log(caller.WBTs[addr-1]);
-      console.log(caller.WBTs[addr-1].WBTData);
       caller.WBTs[addr-1].WBTData["Impedance"] = impd["Impedance"];
       break;
     case 0b00110:
       // trip test // returns time
       let ttest = tripTestParse(data)
       caller.WBTs[addr-1].updateData(ttest); 
-      caller.WBTs[addr-1].WBTData.set("Trip_Test_Time", ttest["Trip_Test_Time"]);
+      caller.WBTs[addr-1].WBTData["Trip_Test_Time"] = ttest["Trip_Test_Time"];
       break;
     case 0b00111:
       // hold test  // needs to return string to be updated (needs WBTList)
