@@ -42,7 +42,7 @@ function parseData(caller,data){
       // self test // justs needs to know if pass or fail. t/f works
       let st = parseSelfTest(data[1])
       caller.WBTs[addr-1].WBTData.set("Self_Test", st);
-      return st;
+      return parseSelfTest(data[1]);
     case 0b00001:
       //Serial number // needs to return string to be updated (needs WBTList)
       return parseSerialNumber(data,"parseFunc");
@@ -74,7 +74,7 @@ function parseData(caller,data){
       // trip test // returns time
       let ttest = tripTestParse(data)
       caller.WBTs[addr-1].updateData(ttest); 
-      caller.WBTs[addr-1].WBTData["Trip_Test_Time"] = ttest["Trip_Test_Time"]
+      caller.WBTs[addr-1].WBTData.set("Trip_Test_Time", ttest["Trip_Test_Time"]);
       break;
     case 0b00111:
       // hold test  // needs to return string to be updated (needs WBTList)
