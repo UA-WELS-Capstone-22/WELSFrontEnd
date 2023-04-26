@@ -66,7 +66,7 @@ function parseData(caller,data){
       break;
     case 0b00101:
       // impedance  // returns impedance
-      caller.WBTs[addr-1].updateStatus("running impedance test");
+      caller.WBTs[addr-1].updateStatus("Impedence Test");
       let impd = ImpedanceParse(data)
       console.log(impd);
       caller.WBTs[addr-1].updateData(impd);
@@ -74,14 +74,14 @@ function parseData(caller,data){
       break;
     case 0b00110:
       // trip test // returns time
-      caller.WBTs[addr-1].updateStatus("trip test running");
+      caller.WBTs[addr-1].updateStatus("Trip Test");
       let ttest = tripTestParse(data)
       caller.WBTs[addr-1].updateData(ttest); 
       caller.WBTs[addr-1].WBTData["Trip_Test_Time"] = ttest["Trip_Test_Time"];
       break;
     case 0b00111:
       // hold test  // needs to return string to be updated (needs WBTList)
-      caller.WBTs[addr-1].updateStatus("Hold test running");
+      caller.WBTs[addr-1].updateStatus("Hold Test");
       caller.WBTs[addr-1].updateData(standardParse(data));
       break;
     case 0b01000:
@@ -91,13 +91,13 @@ function parseData(caller,data){
       break;
     case 0b01001:
       // store/ship  // needs to return string to be updated (needs WBTList)
-      caller.WBTs[addr-1].updateStatus("Storing/Shipping");
+      caller.WBTs[addr-1].updateStatus("Store/Ship Charge");
       caller.WBTs[addr-1].updateData(standardParse(data));
       break;
     case 0b11000:
       // atp complete // generate report & update state to idle?
       caller.WBTs[addr-1].clearData();
-      caller.WBTs[addr-1].updateStatus("idle"); // maybe add test complete state?
+      caller.WBTs[addr-1].updateStatus("Idle"); // maybe add test complete state?
       break;
     case 0b11001:
       // test complete // generate report & updates state to idle?
