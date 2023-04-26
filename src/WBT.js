@@ -70,6 +70,7 @@ class WBT {
 
     clearData(){
       this.$domdata.empty();
+      this.updateStatus("Idle");
     }
 
     checkWBUTemp(data){

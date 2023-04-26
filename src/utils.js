@@ -145,7 +145,7 @@ function parseSerialNumber(data,caller){
 function standardParse(data, port){
   let updates = {
     WBU_temp: (((data[1] << 8 | data[2]) / 2)-55), 
-    WBT_temp:(data[3] << 8 | data[4]), 
+    WBT_temp: (((data[3] << 8 | data[4]) / (65535/175.0)) - 45), 
     Voltage: (data[5] * 0.064) + 2.88, 
     Current: Math.abs((((data[6] << 8 | data[7]) - 512) / 25.6))
   }
