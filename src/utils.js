@@ -67,7 +67,10 @@ function parseData(caller,data){
     case 0b00101:
       // impedance  // returns impedance
       let impd = ImpedanceParse(data)
+      console.log(impd);
       caller.WBTs[addr-1].updateData(impd);
+      console.log(caller.WBTs[addr-1]);
+      console.log(caller.WBTs[addr-1].WBTData);
       caller.WBTs[addr-1].WBTData.set("Impedance",impd["Impedance"]);
       break;
     case 0b00110:
