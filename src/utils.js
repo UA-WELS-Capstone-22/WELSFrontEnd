@@ -41,7 +41,7 @@ function parseData(caller,data){
     case 0b00000:
       // self test // justs needs to know if pass or fail. t/f works
       let st = parseSelfTest(data[1])
-      caller.WBTs[addr-1].WBTData.set("Self_Test", st);
+      // caller.WBTs[addr-1].WBTData.set("Self_Test", st);
       return parseSelfTest(data[1]);
     case 0b00001:
       //Serial number // needs to return string to be updated (needs WBTList)
