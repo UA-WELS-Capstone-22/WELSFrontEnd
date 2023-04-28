@@ -102,42 +102,31 @@ class WBT {
       // else return false
       let CurTemp = data[0];
       let CurTime = data[1];
-
+      console.log("check Temp",data);
+      console.log("tempArray",this.tempArray);
       if(this.tempArray.length == 0){
         this.tempArray.push([CurTemp,CurTime]);
         return false;
       }
-      // else if(this.tempArray.length == 1){ // might need to add time check/alt behavior here 
-      //   let tempDelta = Math.abs(this.tempArray[0][0] - CurTemp);
-      //   let timeDelta = Math.abs(this.tempArray[0][1] - CurTime);
-      //   if(tempDelta > 2 || timeDelta > 10){
-      //     this.tempArray[0] = [CurTemp,CurTime];
-      //     return true;
-      //   }
-      //   else{
-      //     this.tempArray.push([CurTemp,CurTime]);
-      //     return false;
-      //   }
-      // }
-      else{ 
-        let timeDelta = Math.abs(this.tempArray[0][1] - CurTime);
-        while(timeDelta > 10){ // may have issues with this
+      else{ // might need to add time check/alt behavior here
+        let timeDelta = Math.abs(this.tempArray[0][1] - CurTime) / 1000;
+        console.log("timeDeltaInit",timeDelta);
+        while(timeDelta > 10 && this.tempArray.length > 1){ // may have issues with this
           this.tempArray.shift();
-          timeDelta = Math.abs(this.tempArray[0][1] - CurTime);
+          timeDelta = Math.abs(this.tempArray[0][1] - CurTime) / 1000;
+          console.log("timeDelta While",timeDelta);
         }
+        console.log("timeDelta final",timeDelta);
         let tempDelta = Math.abs(this.tempArray[0][0] - CurTemp);
         if(tempDelta > 2 && timeDelta < 10){
-          this.tempArray[0] = [CurTemp,CurTime]; // may need to change this 
+          this.tempArray[0] = [CurTemp,CurTime];
           return true;
         }
         else{
           this.tempArray.push([CurTemp,CurTime]);
-          this.tempArray.shift();
           return false;
         }
       }
-      
-      
     }
 
 

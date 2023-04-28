@@ -52,17 +52,23 @@ function parseData(caller,data){
     case 0b00011:
       // data test // t/f
       if(data[1] == 0){
-        caller.WBTs[addr-1].WBTData["Data_Test"] =  false;
+        caller.WBTs[addr-1].WBTData["Data_Test"] =  "Fail";
         return false;
       }
-      caller.WBTs[addr-1].WBTData["Data_Test"] =  true;
+      caller.WBTs[addr-1].WBTData["Data_Test"] =  "Pass";
       return true;
 
     case 0b00100:
       // charge cont.  // needs to return string to be updated (needs WBTList)
       caller.WBTs[addr-1].updateStatus("Charging");
       console.log(addr);
-      caller.WBTs[addr-1].updateData(standardParse(data));;
+      var updates = standardParse(data)
+      caller.WBTs[addr-1].updateData(updates);
+      var tempFlag = caller.WBTs[addr-1].checkWBUTemp([updates["WBU_temp"],new Date().getTime()])
+      if(tempFlag){
+        sendCommand(caller.port,addr,"11111");
+        caller.WBTs[addr-1].updateStatus("Shutdown");
+      }
       break;
 
     case 0b00101:
@@ -84,17 +90,35 @@ function parseData(caller,data){
     case 0b00111:
       // hold test  // needs to return string to be updated (needs WBTList)
       caller.WBTs[addr-1].updateStatus("Hold Test");
-      caller.WBTs[addr-1].updateData(standardParse(data));
+      var updates = standardParse(data)
+      caller.WBTs[addr-1].updateData(updates);
+      var tempFlag = caller.WBTs[addr-1].checkWBUTemp([updates["WBU_temp"],new Date().getTime()])
+      if(tempFlag){
+        sendCommand(caller.port,addr,"11111");
+        caller.WBTs[addr-1].updateStatus("Shutdown");
+      }
       break;
     case 0b01000:
       // full discharge // needs to return string to be updated (needs WBTList)
       caller.WBTs[addr-1].updateStatus("Discharging");
-      caller.WBTs[addr-1].updateData(standardParse(data));
+      var updates = standardParse(data)
+      caller.WBTs[addr-1].updateData(updates);
+      var tempFlag = caller.WBTs[addr-1].checkWBUTemp([updates["WBU_temp"],new Date().getTime()])
+      if(tempFlag){
+        sendCommand(caller.port,addr,"11111");
+        caller.WBTs[addr-1].updateStatus("Shutdown");
+      }
       break;
     case 0b01001:
       // store/ship  // needs to return string to be updated (needs WBTList)
       caller.WBTs[addr-1].updateStatus("Store/Ship Charge");
-      caller.WBTs[addr-1].updateData(standardParse(data));
+      var updates = standardParse(data)
+      caller.WBTs[addr-1].updateData(updates);
+      var tempFlag = caller.WBTs[addr-1].checkWBUTemp([updates["WBU_temp"],new Date().getTime()])
+      if(tempFlag){
+        sendCommand(caller.port,addr,"11111");
+        caller.WBTs[addr-1].updateStatus("Shutdown");
+      }
       break;
     case 0b11000:
       // atp complete // generate report & update state to idle?
@@ -104,11 +128,13 @@ function parseData(caller,data){
       break;
     case 0b11001:
       // test complete // generate report & updates state to idle?
+      caller.WBTs[addr-1].WBTData[caller.WBTs[addr-1].status +" Test"] = "Pass";
       caller.WBTs[addr-1].clearData();
       break;
     case 0b11111:
       // general error // display error message on screen?
       // need to create display error functionality that can display errors on screen to technitian.
+      caller.WBTs[addr-1].WBTData[caller.WBTs[addr-1].status +" Test"] = "Fail";
       break;
     default:
       //
@@ -117,6 +143,8 @@ function parseData(caller,data){
 
   }
 }
+
+
 
 function parseSelfTest(data){
   let errors = [];
@@ -148,6 +176,21 @@ function parseSerialNumber(data,caller){
    let x2 = data[4].toString(16)
    let x3 = data[5].toString(16)
    let x4 = data[6].toString(16)
+
+   if(parseInt(x1) < 10){
+    x1 = "0" + x1;
+   }
+   if(parseInt(x2) < 10){
+    x2 = "0" + x2;
+   }
+   if(parseInt(x3) < 10){
+    x3 = "0" + x3;
+   }
+   if(parseInt(x4) < 10){
+    x4 = "0" + x4;
+   }
+
+
   str += x1 + x2 + x3 + x4
   return str;
 }
