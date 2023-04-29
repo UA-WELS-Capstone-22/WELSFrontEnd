@@ -117,7 +117,7 @@ class WBT {
           console.log("timeDelta While",timeDelta);
         }
         console.log("timeDelta final",timeDelta);
-        let tempDelta = Math.abs(this.tempArray[0][0] - CurTemp);
+        let tempDelta = CurTemp - this.tempArray[0][0];
         if(tempDelta > 2 && timeDelta < 10){
           this.tempArray[0] = [CurTemp,CurTime];
           this.clearData();
