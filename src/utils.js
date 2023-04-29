@@ -52,19 +52,19 @@ function parseData(caller,data){
     case 0b00011:
       // data test // t/f
       if(data[1] == 0){
-        caller.WBTs[addr-1].WBTData["Data_Test"] =  "Fail";
+        caller.WBTs[addr-1].WBTData["Data Test"] =  "Fail";
         return false;
       }
-      caller.WBTs[addr-1].WBTData["Data_Test"] =  "Pass";
+      caller.WBTs[addr-1].WBTData["Data Test"] =  "Pass";
       return true;
 
     case 0b00100:
       // charge cont.  // needs to return string to be updated (needs WBTList)
       caller.WBTs[addr-1].updateStatus("Charging");
       console.log(addr);
-      var updates = standardParse(data)
+      var updates = standardParse(data,caller)
       caller.WBTs[addr-1].updateData(updates);
-      var tempFlag = caller.WBTs[addr-1].checkWBUTemp([updates["WBU_temp"],new Date().getTime()])
+      var tempFlag = caller.WBTs[addr-1].checkWBUTemp([updates["WBU temp °C"],new Date().getTime()])
       if(tempFlag){
         sendCommand(caller.port,addr,"11111");
         caller.WBTs[addr-1].updateStatus("Shutdown");
@@ -77,7 +77,7 @@ function parseData(caller,data){
       let impd = ImpedanceParse(data)
       console.log(impd);
       caller.WBTs[addr-1].updateConsts(impd);
-      caller.WBTs[addr-1].WBTData["Impedance"] = impd["Impedance"];
+      caller.WBTs[addr-1].WBTData["Impedance (mOhms)"] = impd["Impedance (mOhms)"];
       break;
 
     case 0b00110:
@@ -85,14 +85,14 @@ function parseData(caller,data){
       caller.WBTs[addr-1].updateStatus("Trip Test");
       let ttest = tripTestParse(data)
       caller.WBTs[addr-1].updateConsts(ttest); 
-      caller.WBTs[addr-1].WBTData["Trip_Test_Time"] = ttest["Trip_Test_Time"];
+      caller.WBTs[addr-1].WBTData["Trip Test Time (ms)"] = ttest["Trip Test Time (ms)"];
       break;
     case 0b00111:
       // hold test  // needs to return string to be updated (needs WBTList)
       caller.WBTs[addr-1].updateStatus("Hold Test");
-      var updates = standardParse(data)
+      var updates = standardParse(data,caller)
       caller.WBTs[addr-1].updateData(updates);
-      var tempFlag = caller.WBTs[addr-1].checkWBUTemp([updates["WBU_temp"],new Date().getTime()])
+      var tempFlag = caller.WBTs[addr-1].checkWBUTemp([updates["WBU temp °C"],new Date().getTime()])
       if(tempFlag){
         sendCommand(caller.port,addr,"11111");
         caller.WBTs[addr-1].updateStatus("Shutdown");
@@ -101,9 +101,9 @@ function parseData(caller,data){
     case 0b01000:
       // full discharge // needs to return string to be updated (needs WBTList)
       caller.WBTs[addr-1].updateStatus("Discharging");
-      var updates = standardParse(data)
+      var updates = standardParse(data,caller)
       caller.WBTs[addr-1].updateData(updates);
-      var tempFlag = caller.WBTs[addr-1].checkWBUTemp([updates["WBU_temp"],new Date().getTime()])
+      var tempFlag = caller.WBTs[addr-1].checkWBUTemp([updates["WBU temp °C"],new Date().getTime()])
       if(tempFlag){
         sendCommand(caller.port,addr,"11111");
         caller.WBTs[addr-1].updateStatus("Shutdown");
@@ -112,9 +112,9 @@ function parseData(caller,data){
     case 0b01001:
       // store/ship  // needs to return string to be updated (needs WBTList)
       caller.WBTs[addr-1].updateStatus("Store/Ship Charge");
-      var updates = standardParse(data)
+      var updates = standardParse(data,caller)
       caller.WBTs[addr-1].updateData(updates);
-      var tempFlag = caller.WBTs[addr-1].checkWBUTemp([updates["WBU_temp"],new Date().getTime()])
+      var tempFlag = caller.WBTs[addr-1].checkWBUTemp([updates["WBU temp °C"],new Date().getTime()])
       if(tempFlag){
         sendCommand(caller.port,addr,"11111");
         caller.WBTs[addr-1].updateStatus("Shutdown");
@@ -124,7 +124,7 @@ function parseData(caller,data){
       // atp complete // generate report & update state to idle?
       caller.WBTs[addr-1].clearData();
       caller.WBTs[addr-1].updateStatus("Idle"); // maybe add test complete state?
-      rpts.createReport("FULL_ATP",caller.WBTs[addr-1].SN,caller.WBTs[addr-1].WBTData)
+      rpts.createReport("FULL_ATP",caller.WBTs[addr-1].SN,caller.WBTs[addr-1].firmwareVersion,caller.WBTs[addr-1].WBTData)
       break;
     case 0b11001:
       // test complete // generate report & updates state to idle?
@@ -186,7 +186,7 @@ function parseSerialNumber(data,caller){
    if(parseInt(x3) < 10){
     x3 = "0" + x3;
    }
-   if(parseInt(x4) < 10){
+   if((x4) < 10){
     x4 = "0" + x4;
    }
 
@@ -195,29 +195,31 @@ function parseSerialNumber(data,caller){
   return str;
 }
 
-function standardParse(data, port){
+function standardParse(data, caller){
   let updates = {
-    WBU_temp: (((data[1] << 8 | data[2]) / 2)-55), 
-    WBT_temp: (((data[3] << 8 | data[4]) / (65535/175.0)) - 45), 
-    Voltage: (data[5] * 0.064) + 2.88, 
-    Current: Math.abs((((data[6] << 8 | data[7]) - 512) / 25.6))
+    "WBU temp °C": (((data[1] << 8 | data[2]) / 2)-55), 
+    "WBT temp °C": (((data[3] << 8 | data[4]) / (65535/175.0)) - 45), 
+    "Voltage (V)": (data[5] * 0.064) + 2.88, 
+    "Current (Amps)": Math.abs((((data[6] << 8 | data[7]) - 512) / 25.6))
   }
   let flag = false;
-  if(port != undefined){
+  if(caller.port != undefined){
     // TODO: Implement function to check for 2 deg C delta in last 10 seconds
-    if(updates.WBU_temp > 35 || updates.WBU_temp < 15 ){ 
+    if(updates["WBU temp °C"] > 35 || updates["WBU temp °C"] < 15 ){ 
       flag = true;
     }
-    if(updates.Current > 4.0 || updates.Current < 0.25){
+    if(updates["Current (Amps)"] > 4.0 || updates["Current (Amps)"] < 0.25){
       flag = true;
     }
-    if(updates.Voltage > 8.2 || updates.Voltage < 5.0){
+    if(updates["Voltage (V)"] > 8.2 || updates["Voltage (V)"] < 5.0){
       flag = true;
     }
     
   }
   if(flag){ 
-    port.write(strtobuf((data[0] >> 5).toString() + "11111")) // will send shutdown command if flag true in block above
+    caller.port.write(strtobuf((data[0] >> 5).toString() + "11111")) // will send shutdown command if flag true in block above
+    caller.WBTs[data[(0>>5)-1]].clearData();
+    caller.WBTs[data[(0>>5)-1]].updateStatus("Shutdown");
   }
   
 
@@ -226,7 +228,7 @@ function standardParse(data, port){
 
 function tripTestParse(data){
   let updates = {
-    Trip_Test_Time: data[1]
+    "Trip Test Time (ms)": data[1]
   }
   return updates;
 }
@@ -234,7 +236,7 @@ function tripTestParse(data){
 function ImpedanceParse(data){
   // confirm conversion
   let updates = {
-    Impedance: data[1] << 1
+    "Impedance (mOhms)": data[1] << 1
   }
   return updates;
 }

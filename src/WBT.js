@@ -9,7 +9,7 @@ class WBT {
       this.port = port
       this.SN = SerialNum; // serial number of WBT
       this.tempArray = []; // array to store temperature data from WBT
-      this.WBTData = {"Self_Test_Result": selfTestRestult }; // array to store data from WBT // will store data from various tests
+      this.WBTData = {"Self Test Result": selfTestRestult }; // array to store data from WBT // will store data from various tests
       utils.addToDOM(address); // add WBT to DOM
       let str = ".WBTPanel#"+(Number(address))
       this.$domRef = $(str);
@@ -38,19 +38,19 @@ class WBT {
     
     updateData(data){
       for(let key in data){
-        let qry = "#"+key
+        let qry = "#"+key.replace(/[()\s]+/g, '')
         let dataItem = this.$domdata.find(qry)
         if(dataItem.length == 0){
           this.$domdata.append(
             `
-            <p class = 'dataItem' id = '${key}'> ${key} : ${data[key]} </p>
+            <p class = 'dataItem' id = '${key.replace(/[()\s]+/g, '')}'> ${key} : ${data[key].toFixed(3)} </p>
             `
           )
         }
         else{
           dataItem.text(
             `
-            ${key} : ${data[key]} 
+            ${key} : ${data[key].toFixed(3)} 
             `
           )
         }
@@ -59,12 +59,12 @@ class WBT {
     
     updateConsts(consts){
       for(let key in consts){
-        let qry = "#"+key
+        let qry = "#"+key.replace(/[()\s]+/g, '')
         let dataItem = this.$domDataHeader.find(qry)
         if(dataItem.length == 0){
           this.$domDataHeader.append(
             `
-            <p class = 'dataItem' id = '${key}'> ${key} : ${consts[key]} </p>
+            <p class = 'dataItem' id = '${key.replace(/[()\s]+/g, '')}'> ${key} : ${consts[key]} </p>
             `
           )
         }
@@ -120,6 +120,7 @@ class WBT {
         let tempDelta = Math.abs(this.tempArray[0][0] - CurTemp);
         if(tempDelta > 2 && timeDelta < 10){
           this.tempArray[0] = [CurTemp,CurTime];
+          this.clearData();
           return true;
         }
         else{

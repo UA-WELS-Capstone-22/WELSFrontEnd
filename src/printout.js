@@ -85,16 +85,34 @@ closeFileSelect.addEventListener('click',updateCss);
 //   doc.end();
 // }
 
-function createReport(Test,SN,data){
+function createReport(Test,SN,FW,data){
   const doc = new PDFDocument();
-  doc.fontSize(25).text('WBU Test Report', 100, 100);
+  doc.font('Times-Roman').fontSize(20).text('WBU Test Report', 100, 100);
   doc.moveDown();
-  doc.text('WBU SN: ' + SN);
+  doc.font('Times-Roman').text('WBT firmware version: ' + FW);
+  doc.moveDown();
+  doc.font('Times-Roman').text('WBU SN: ' + SN);
+  doc.moveDown();
   let date = new Date();
-  doc.text('Test Date: ' + date.toLocaleString());
+  doc.font('Times-Roman').text('Test Date: ' + date.toLocaleString());
   doc.moveDown();
   for(let msgs in data){
-    doc.text(msgs + ': ' + data[msgs]);
+    if(msgs == "Self Test Result"){
+      if(data[msgs] === 15){
+        doc.font('Times-Roman').text(msgs + ": Pass");
+      }
+      else{
+        doc.font('Times-Roman').text(msgs + ": Fail");
+        doc.moveDown();
+        for(let test in data[msgs]){
+          doc.font('Times-Roman').text("  "+msgs);
+          doc.moveDown();
+        }
+      }
+    }
+    else{
+      doc.font('Times-Roman').text(msgs + ': ' + data[msgs]);
+    }
     doc.moveDown();
   }
   let month = date.getMonth() + 1;
@@ -110,6 +128,7 @@ function createReport(Test,SN,data){
   doc.pipe(writeStream);
   doc.end();
 }
+
 
 
 
