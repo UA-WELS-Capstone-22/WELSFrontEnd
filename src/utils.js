@@ -218,8 +218,8 @@ function standardParse(data, caller){
   }
   if(flag){ 
     caller.port.write(strtobuf((data[0] >> 5).toString() + "11111")) // will send shutdown command if flag true in block above
-    caller.WBTs[data[(0>>5)-1]].clearData();
-    caller.WBTs[data[(0>>5)-1]].updateStatus("Shutdown");
+    caller.WBTs[data[0>>5]-1].clearData();
+    caller.WBTs[data[0>>5]-1].updateStatus("Shutdown");
   }
   
 
