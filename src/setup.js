@@ -8,11 +8,6 @@ import * as hs from './handshake.js';
 
 
 //TODO: add error handling ~ started, lots more to do
-//TODO: add data proceessing function ~ in progress
-//TODO: after data is parsed, add to html ~ in progress - need to test further
-//TODO: after handshake iterate through WBT list and send self test command waiting for response ~ started ~ need to add response handling for failed tests
-//TODO: for test timing store start UTC time and END UTC time when end command Rx'ed then calc for later ~ not started
-
 // WBT class
 class WBTList {
   // constructor
@@ -42,25 +37,16 @@ class WBTList {
         this.Handshake();
       });
 
-      this.parser.on("data", (data) => {
-        console.log("data recieved");
-        // utils.parseData(this,data);
-      });
-
       this.port.on("close", () => {
         console.log(`closing port ${this.port.path}`);
         utils.noDevicesDetected(this)
-        // should anythign be done here?
       });
       // might need to add event listener for data recieved to be passed to parsing function could also be in elsewhere
-
     } catch (error) {
       console.error(error);
     }
   }
 
-  // on connection to serial port, create and return SerialPort object 
-  // Baud rate is 9600
   async getPortAndInitializeSerialPort() {
     //TODO: add error handling for when no device detected (ie add try catch)
     const port = await this.getPort();
@@ -78,7 +64,7 @@ class WBTList {
   // get list of com ports with device connected
   async getPort() {
     const ports = await SerialPort.list();
-    // console.log("ports:", ports);
+
     if (!ports || !ports.length) {
       // devive not detected
       // throw new Error("No device connected");
@@ -152,21 +138,12 @@ class WBTList {
       this.parser._read(); // clear buffer
     }
     this.parser.on("data", (data) => {
-    // //   // 2 options:
-
-    // //   /*
-    // //   1) call parse function in utils, store response, then call function to act on response
-    // //   2) call parse function in utils, pass in wbtList and give utils access to wbtList
-    // //   3) move parse back to setup, have parse function call utils, and then parse can act on response
-    // //   */
-
       utils.parseData(this,data);
     })
   }
 
   standardParse(addr,data){
     console.log(data);
-    
     let updates = {
       WBU_temp:(data[1] << 8 | data[2]), 
       WBT_temp:(data[3] << 8 | data[4]), 
@@ -182,7 +159,7 @@ class WBTList {
     }
     this.WBTs[addr-1].updateData(updates);
   }
-
+  
   addWBT(WBT) {
     this.WBTs.push(WBT);
   }

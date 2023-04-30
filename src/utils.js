@@ -1,11 +1,10 @@
 var $ = require( "jquery" );
 import * as rpts from './printout.js';
 function strtobuf(str){
-  // might need more
   let buf = Buffer.alloc(0);
   buf = Buffer.alloc(1);
   buf.writeUInt8(parseInt(str,2));
-  console.log("buf:",buf) // leaving in for now
+  console.log("buf:",buf) 
   return buf
 }
 
@@ -39,18 +38,20 @@ function parseData(caller,data){
   console.log(data,addr,cmd);
   switch (cmd) {
     case 0b00000:
-      // self test // justs needs to know if pass or fail. t/f works
+      // self test // 
       return parseSelfTest(data[1]);
 
     case 0b00001:
-      //Serial number // needs to return string to be updated (needs WBTList)
+      //Serial number // 
       return parseSerialNumber(data,"parseFunc");
+
     case 0b00010:
-      // data dump // needs to be stored somewhere, maybe in WBT object? 
+      // data dump // 
       rpts.createDataDump(data,caller.WBTs[addr-1].SN);
       break;
+
     case 0b00011:
-      // data test // t/f
+      // data test // 
       if(data[1] == 0){
         caller.WBTs[addr-1].WBTData["Data Test"] =  "Fail";
         return false;
@@ -59,7 +60,7 @@ function parseData(caller,data){
       return true;
 
     case 0b00100:
-      // charge cont.  // needs to return string to be updated (needs WBTList)
+      // charge cont.  // 
       caller.WBTs[addr-1].updateStatus("Charging");
       console.log(addr);
       var updates = standardParse(data,caller)
@@ -72,7 +73,7 @@ function parseData(caller,data){
       break;
 
     case 0b00101:
-      // impedance  // returns impedance
+      // impedance  // 
       caller.WBTs[addr-1].updateStatus("Impedence Test");
       let impd = ImpedanceParse(data)
       console.log(impd);
@@ -81,14 +82,14 @@ function parseData(caller,data){
       break;
 
     case 0b00110:
-      // trip test // returns time
+      // trip test // 
       caller.WBTs[addr-1].updateStatus("Trip Test");
       let ttest = tripTestParse(data)
       caller.WBTs[addr-1].updateConsts(ttest); 
       caller.WBTs[addr-1].WBTData["Trip Test Time (ms)"] = ttest["Trip Test Time (ms)"];
       break;
     case 0b00111:
-      // hold test  // needs to return string to be updated (needs WBTList)
+      // hold test  // 
       caller.WBTs[addr-1].updateStatus("Hold Test");
       var updates = standardParse(data,caller)
       caller.WBTs[addr-1].updateData(updates);
@@ -99,7 +100,7 @@ function parseData(caller,data){
       }
       break;
     case 0b01000:
-      // full discharge // needs to return string to be updated (needs WBTList)
+      // full discharge // 
       caller.WBTs[addr-1].updateStatus("Discharging");
       var updates = standardParse(data,caller)
       caller.WBTs[addr-1].updateData(updates);
@@ -110,7 +111,7 @@ function parseData(caller,data){
       }
       break;
     case 0b01001:
-      // store/ship  // needs to return string to be updated (needs WBTList)
+      // store/ship  // 
       caller.WBTs[addr-1].updateStatus("Store/Ship Charge");
       var updates = standardParse(data,caller)
       caller.WBTs[addr-1].updateData(updates);
@@ -121,18 +122,18 @@ function parseData(caller,data){
       }
       break;
     case 0b11000:
-      // atp complete // generate report & update state to idle?
+      // atp complete //
       caller.WBTs[addr-1].clearData();
-      caller.WBTs[addr-1].updateStatus("Idle"); // maybe add test complete state?
+      caller.WBTs[addr-1].updateStatus("Idle"); 
       rpts.createReport("FULL_ATP",caller.WBTs[addr-1].SN,caller.WBTs[addr-1].firmwareVersion,caller.WBTs[addr-1].WBTData)
       break;
     case 0b11001:
-      // test complete // generate report & updates state to idle?
+      // test complete // 
       caller.WBTs[addr-1].WBTData[caller.WBTs[addr-1].status +" Test"] = "Pass";
       caller.WBTs[addr-1].clearData();
       break;
     case 0b11111:
-      // general error // display error message on screen?
+      // general error // 
       // need to create display error functionality that can display errors on screen to technitian.
       caller.WBTs[addr-1].WBTData[caller.WBTs[addr-1].status +" Test"] = "Fail";
       break;
@@ -169,7 +170,7 @@ function parseSelfTest(data){
 }
 
 function parseSerialNumber(data,caller){
-  // make hex aftr 3rd byte
+ 
   let str = String.fromCharCode(data[1])
    + String.fromCharCode(data[2])
    let x1 = data[3].toString(16)
@@ -204,7 +205,6 @@ function standardParse(data, caller){
   }
   let flag = false;
   if(caller.port != undefined){
-    // TODO: Implement function to check for 2 deg C delta in last 10 seconds
     if(updates["WBU temp °C"] > 35 || updates["WBU temp °C"] < 15 ){ 
       flag = true;
     }
@@ -218,8 +218,6 @@ function standardParse(data, caller){
     caller.WBTs[(data[0]>>5)-1].clearData();
     caller.WBTs[(data[0]>>5)-1].updateStatus("Shutdown");
   }
-  
-
   return updates;
 }
 
@@ -231,14 +229,12 @@ function tripTestParse(data){
 }
 
 function ImpedanceParse(data){
-  // confirm conversion
   let updates = {
     "Impedance (mOhms)": data[1] << 1
   }
   return updates;
 }
 
-// add serial number to this 
 function addToDOM(Address) {
   let wbtHTML = `
   <div class = 'WBTPanel' id = ${Number(Address) }>

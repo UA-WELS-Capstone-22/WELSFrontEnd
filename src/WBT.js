@@ -24,18 +24,11 @@ class WBT {
       this.$cmdButton.on("click", () => {
         if (this.$cmdSelect.val() != ""){
           utils.sendCommand(this.port, this.WBTAddress, this.$cmdSelect.val());
-          // console.log();
-          // this.updateStatus(this.$cmdSelect[0].options[this.$cmdSelect[0].selectedIndex].text); // idk if this works
-          // may need update status function call here absed on command
-          // createReport(this.$cmdSelect[0].options[this.$cmdSelect[0].selectedIndex].text,this.SN); // need to figure where and when to cal function, may get moved to setup.js
         }
       });
       
     }
-    
-    // needs to be better way but this works
 
-    
     updateData(data){
       for(let key in data){
         let qry = "#"+key.replace(/[()\s]+/g, '')
@@ -97,7 +90,7 @@ class WBT {
 
     checkWBUTemp(data){
       // WBUtemp is array of toupls [(temp,time1),(temp,time2),...]
-      // maintains last 2 seconds of data 
+      // maintains last 10 seconds of data 
       // if temp delta is greater than 2 deg C, return true
       // else return false
       let CurTemp = data[0];
@@ -108,10 +101,10 @@ class WBT {
         this.tempArray.push([CurTemp,CurTime]);
         return false;
       }
-      else{ // might need to add time check/alt behavior here
+      else{ 
         let timeDelta = Math.abs(this.tempArray[0][1] - CurTime) / 1000;
         console.log("timeDeltaInit",timeDelta);
-        while(timeDelta > 10 && this.tempArray.length > 1){ // may have issues with this
+        while(timeDelta > 10 && this.tempArray.length > 1){ 
           this.tempArray.shift();
           timeDelta = Math.abs(this.tempArray[0][1] - CurTime) / 1000;
           console.log("timeDelta While",timeDelta);
