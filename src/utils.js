@@ -208,10 +208,7 @@ function standardParse(data, caller){
     if(updates["WBU temp °C"] > 35 || updates["WBU temp °C"] < 15 ){ 
       flag = true;
     }
-    if(updates["Current (Amps)"] > 4.0 || updates["Current (Amps)"] < 0.25){
-      flag = true;
-    }
-    if(updates["Voltage (V)"] > 8.2 || updates["Voltage (V)"] < 5.0){
+    if(updates["Voltage (V)"] > 8.5 || updates["Voltage (V)"] < 5.0){
       flag = true;
     }
     
