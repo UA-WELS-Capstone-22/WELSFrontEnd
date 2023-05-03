@@ -77,9 +77,9 @@ class WBT {
     }
 
     updateSN(){
-      console.log(this.$domRef.find("h3.WBUSN"));
+      // console.log(this.$domRef.find("h3.WBUSN"));
       let sts = this.$domRef.find("h3.WBUSN")
-      console.log(sts);
+      // console.log(sts);
       sts.text(`WBU SN: ${this.SN}`);
     }
 
@@ -95,26 +95,26 @@ class WBT {
       // else return false
       let CurTemp = data[0];
       let CurTime = data[1];
-      console.log("check Temp",data);
-      console.log("tempArray",this.tempArray);
+      // console.log("check Temp",data);
+      // console.log("tempArray",this.tempArray);
       if(this.tempArray.length == 0){
         this.tempArray.push([CurTemp,CurTime]);
         return false;
       }
       else{ 
         let timeDelta = Math.abs(this.tempArray[0][1] - CurTime) / 1000;
-        console.log("timeDeltaInit",timeDelta);
+        // console.log("timeDeltaInit",timeDelta);
         while(timeDelta > 10 && this.tempArray.length > 1){ 
           this.tempArray.shift();
           timeDelta = Math.abs(this.tempArray[0][1] - CurTime) / 1000;
-          console.log("timeDelta While",timeDelta);
+          // console.log("timeDelta While",timeDelta);
         }
-        console.log("timeDelta final",timeDelta);
+        // console.log("timeDelta final",timeDelta);
         let tempDelta = CurTemp - this.tempArray[0][0];
         if(tempDelta > 2 && timeDelta < 10){
           this.tempArray[0] = [CurTemp,CurTime];
-          this.clearData();
-          return true;
+          // this.clearData();
+          return false;
         }
         else{
           this.tempArray.push([CurTemp,CurTime]);
