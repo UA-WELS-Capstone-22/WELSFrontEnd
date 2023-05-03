@@ -25,7 +25,7 @@ const createWindow = () => {
 
   // NOTE: comment out lines below before packaging
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
   // hides menu bar
   mainWindow.setMenuBarVisibility(false)
 

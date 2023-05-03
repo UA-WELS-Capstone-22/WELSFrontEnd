@@ -62,7 +62,7 @@ function parseData(caller,data){
     case 0b00100:
       // charge cont.  // 
       caller.WBTs[addr-1].updateStatus("Charging");
-      console.log(addr);
+      // console.log(addr);
       var updates = standardParse(data,caller)
       caller.WBTs[addr-1].updateData(updates);
       var tempFlag = caller.WBTs[addr-1].checkWBUTemp([updates["WBU temp °C"],new Date().getTime()])
@@ -76,7 +76,7 @@ function parseData(caller,data){
       // impedance  // 
       caller.WBTs[addr-1].updateStatus("Impedence Test");
       let impd = ImpedanceParse(data)
-      console.log(impd);
+      // console.log(impd);
       caller.WBTs[addr-1].updateConsts(impd);
       caller.WBTs[addr-1].WBTData["Impedance (mOhms)"] = impd["Impedance (mOhms)"];
       break;
@@ -139,7 +139,7 @@ function parseData(caller,data){
       break;
     default:
       //
-      console.log("Unknown command:",data);
+      // console.log("Unknown command:",data);
       break;
 
   }
@@ -288,7 +288,7 @@ function addToDOM(Address) {
 function noDevicesDetected(obj){
   document.getElementById("WBTContainer").innerHTML = "";
   const wbtHTML = 
-  `<div id = "noDevices" class = modal">
+  `<div id = "noDevices" class = "modal">
     <div class = "modal-content">
       <p>No Devices Detected. Please check device connection click "Retry" when ready.</p>
       <button id = "Retry" >Retry</button>
@@ -303,7 +303,36 @@ function noDevicesDetected(obj){
     document.getElementById("noDevices").remove();
     obj.initialize();
   })
+}
 
+async function getNumConnectedDevices(obj){
+  return new Promise((resolve, reject) => {
+    const modalHTML = 
+    `<div id = "numDevicesPrompt" class = "modal">
+      <div class = "modal-content">
+        <span class="close">&times;</span>
+        <h2>Please enter the number of connected WBT's </h2>
+        <input type="text" id="numDevsBox" >
+        <button id = "Enter" >Enter</button>
+      </div>
+    </div>
+    `
+    
+    if(document.getElementById("numDevicesPrompt") == null){
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+    let btn = document.getElementById("Enter");
+    btn.addEventListener("click", function(){
+      let numDevs = document.getElementById("numDevsBox").value;
+      if(numDevs >= 1 && numDevs <= 6){
+        document.getElementById("numDevicesPrompt").remove();
+        resolve(numDevs); 
+      }
+      else{
+        alert("Please enter a number between 1 and 6");
+      }
+    })
+  })
 }
 
 
@@ -315,5 +344,6 @@ export{
   parseData,
   addToDOM,
   parseSerialNumber,
-  noDevicesDetected
-}
+  noDevicesDetected,
+  getNumConnectedDevices
+} 

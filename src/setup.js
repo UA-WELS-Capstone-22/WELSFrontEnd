@@ -33,12 +33,13 @@ class WBTList {
       // this.initParser("ByteLengthParser", 1);
 
       this.port.on("open", () => {
-        console.log(`port ${this.port.path} open`);
+        // console.log(`port ${this.port.path} open`);
         this.Handshake();
       });
 
       this.port.on("close", () => {
-        console.log(`closing port ${this.port.path}`);
+        // console.log(`closing port ${this.port.path}`);
+        this.WBTs = [];
         utils.noDevicesDetected(this)
       });
       // might need to add event listener for data recieved to be passed to parsing function could also be in elsewhere
@@ -68,8 +69,8 @@ class WBTList {
     if (!ports || !ports.length) {
       // devive not detected
       // throw new Error("No device connected");
-      console.log("No device connected");
-      console.log("ports:", ports);
+      // console.log("No device connected");
+      // console.log("ports:", ports);
     }
     else if(ports.length > 1) {
       // multiple devices detected
@@ -108,6 +109,8 @@ class WBTList {
 
   async Handshake() { 
     // wait 5 seconds before sending data as arduino resets on serial connection open event
+    let numDevs = await utils.getNumConnectedDevices(this);
+    console.log(numDevs);
     await new Promise((resolve) => setTimeout(resolve, 5000));
     // for loop to run up to 6 times as max supported WBTs is 6
     // r1 is the address response
@@ -116,7 +119,7 @@ class WBTList {
     // r4 gets the Serial number
     // if all valid, then add WBT to WBTList
     // after each 'r' event listeners are removed, to save memory and prevent multiple listeners from being added
-    for (let i = 1; i < 2; i++) {
+    for (let i = 1; i <= numDevs; i++) {
       try{ // for instaces where no response is received / all wbt discovered
         var r1 = await hs.assignAddress(this.port,this.parser,(i & 0b111).toString(2).padStart(3,'0'));
         this.parser.removeAllListeners();
@@ -142,8 +145,14 @@ class WBTList {
     })
   }
 
+  getNumberOfConnctedWBTs(){
+    let numDevices = 0;
+
+    return numDevices
+  }
+
   standardParse(addr,data){
-    console.log(data);
+    // console.log(data);
     let updates = {
       WBU_temp:(data[1] << 8 | data[2]), 
       WBT_temp:(data[3] << 8 | data[4]), 

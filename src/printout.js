@@ -31,7 +31,7 @@ var openFile = () =>  {
     document.getElementById('myModal').style.display = "none";
   }
   ).catch(err => {
-    console.log(err)
+    // console.log(err)
   })
 }
 

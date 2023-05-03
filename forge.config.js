@@ -33,7 +33,7 @@ module.exports = {
       return packageJson;
     },
     packageAfterPrune: async (forgeConfig, buildPath) => {
-      console.log(buildPath);
+      // console.log(buildPath);
       return new Promise((resolve, reject) => {
         const npmInstall = spawn('npm', ['install'], {
           cwd: buildPath,

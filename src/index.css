@@ -5,14 +5,12 @@ body {
 }
 
 div#navbar.container {
-  /* display: inline-block; */
   justify-content: space-between;
   align-items: center;
   background-color: #555555;
   width: 100%;
   height: auto;
   overflow: auto;
-  /* float: left; */
 }
 
 div#TandL.content {
@@ -40,7 +38,7 @@ img#logo {
   margin: 0;
 }
 
-/* remove default padding */
+
 
 
 /* css for modal id = myModal */
