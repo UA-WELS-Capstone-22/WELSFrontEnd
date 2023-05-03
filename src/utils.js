@@ -206,13 +206,14 @@ function standardParse(data, caller){
   let flag = false;
   if(caller.port != undefined){
     if(updates["WBU temp °C"] > 35 || updates["WBU temp °C"] < 15 ){ 
-      flag = true;
+      //flag = true;
     }
     if(updates["Voltage (V)"] > 8.5 || updates["Voltage (V)"] < 5.0){
-      flag = true;
+      //flag = true;
     }
     
   }
+  // flag check was causing issues last minute, need to troubleshoot when first data package contains out-of-bounds values
   if(flag){ 
     caller.port.write(strtobuf((data[0] >> 5).toString() + "11111")) // will send shutdown command if flag true in block above
     caller.WBTs[(data[0]>>5)-1].clearData();
